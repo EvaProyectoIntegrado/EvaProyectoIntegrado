@@ -16,7 +16,36 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from EvaProyectoIntegrado.api import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # USUARIOS
+    path('api/registrar/', views.registrar_usuario),
+    path('api/login/', views.login),
+
+    # MADRE
+    path('api/madre/crear/', views.crear_madre),
+    path('api/madres/', views.listar_madres),
+    path('api/madre/<int:id>/', views.obtener_madre),
+    path('api/madre/<int:id>/actualizar/', views.actualizar_madre),
+    path('api/madre/<int:id>/eliminar/', views.eliminar_madre),
+
+    # PARTO
+    path('api/parto/crear/', views.crear_parto),
+    path('api/partos/', views.listar_partos),
+    path('api/parto/<int:id>/', views.obtener_parto),
+    path('api/parto/<int:id>/actualizar/', views.actualizar_parto),
+    path('api/parto/<int:id>/eliminar/', views.eliminar_parto),
+
+    # RECIÉN NACIDO
+    path('api/rn/crear/', views.crear_rn),
+    path('api/rn/', views.listar_rn),
+    path('api/rn/<int:id>/', views.obtener_rn),
+    path('api/rn/<int:id>/actualizar/', views.actualizar_rn),
+    path('api/rn/<int:id>/eliminar/', views.eliminar_rn),
+
+    # REPORTE REM22
+    path('api/reportes/rem22/', views.generar_informe_rem),
 ]

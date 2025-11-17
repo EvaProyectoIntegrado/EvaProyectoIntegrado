@@ -1,5 +1,9 @@
 from django.db import models
 
+
+# ============================
+#         USUARIO
+# ============================
 class Usuario(models.Model):
     ROL_CHOICES = [
         ('matrona', 'Matrona'),
@@ -17,6 +21,10 @@ class Usuario(models.Model):
         return f"{self.nombre} ({self.rol})"
 
 
+
+# ============================
+#           MADRE
+# ============================
 class Madre(models.Model):
     rut = models.CharField(max_length=12, unique=True)
     nombre = models.CharField(max_length=100)
@@ -27,17 +35,26 @@ class Madre(models.Model):
         return self.nombre
 
 
+
+# ============================
+#            PARTO
+# ============================
 class Parto(models.Model):
-    madre = models.ForeignKey(Madre, on_delete=models.CASCADE)
-    fecha_parto = models.DateTimeField()
-    tipo_parto = models.CharField(max_length=50)
+    madre = models.ForeignKey(Madre, on_delete=models.CASCADE, related_name='partos')
+    fecha_parto = models.DateField()  # mejor para reportes
+    tipo_parto = models.CharField(max_length=50)  # normal, cesarea, inducido
+    observaciones = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Parto de {self.madre.nombre}"
+        return f"Parto de {self.madre.nombre} el {self.fecha_parto}"
 
 
+
+# ============================
+#        RECIÉN NACIDO
+# ============================
 class RecienNacido(models.Model):
-    parto = models.OneToOneField(Parto, on_delete=models.CASCADE)
+    parto = models.OneToOneField(Parto, on_delete=models.CASCADE, related_name='rn')
     peso = models.FloatField()
     talla = models.FloatField()
     apgar = models.IntegerField()
@@ -46,6 +63,10 @@ class RecienNacido(models.Model):
         return f"RN del parto {self.parto.id}"
 
 
+
+# ============================
+#        INFORME REM 22
+# ============================
 class InformeREM(models.Model):
     fecha = models.DateField()
     total_partos = models.IntegerField()

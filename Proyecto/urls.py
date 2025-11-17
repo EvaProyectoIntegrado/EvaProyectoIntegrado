@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from EvaProyectoIntegrado.api import views
+from api import views     # <---- IMPORTACIÓN CORRECTA
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,13 +39,13 @@ urlpatterns = [
     path('api/parto/<int:id>/actualizar/', views.actualizar_parto),
     path('api/parto/<int:id>/eliminar/', views.eliminar_parto),
 
-    # RECIÉN NACIDO
+    # RN
     path('api/rn/crear/', views.crear_rn),
     path('api/rn/', views.listar_rn),
     path('api/rn/<int:id>/', views.obtener_rn),
     path('api/rn/<int:id>/actualizar/', views.actualizar_rn),
     path('api/rn/<int:id>/eliminar/', views.eliminar_rn),
 
-    # REPORTE REM22
+    # INFORME REM22
     path('api/reportes/rem22/', views.generar_informe_rem),
 ]

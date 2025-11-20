@@ -1,128 +1,34 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Obstétrico</title>
+    <title>{% block title %}👶 Sistema Obstétrico Bebé{% endblock %}</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #E8F4FA;
-        }
-
-        /* HEADER */
-        header {
-            background: #1A3C57;
-            padding: 20px;
-            color: white;
-            text-align: center;
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        /* NAVBAR */
-        nav {
-            background: #4FA3D1;
-            padding: 12px 0;
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 17px;
-            font-weight: bold;
-        }
-
-        nav a:hover {
-            color: #002f4b;
-        }
-
-        /* CONTENEDOR */
-        .container {
-            width: 90%;
-            max-width: 900px;
-            margin: 40px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            padding: 15px;
-            background: #1A3C57;
-            color: white;
-            font-size: 14px;
-        }
-
-        /* TABLAS */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th {
-            background: #4FA3D1;
-            color: white;
-            padding: 8px;
-        }
-
-        td {
-            padding: 8px;
-            border-bottom: 1px solid #d9d9d9;
-        }
-
-        tr:hover {
-            background: #f2faff;
-        }
-
-        .btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
-        }
-
-        .btn-primary { background: #4FA3D1; }
-        .btn-danger { background: #d9534f; }
-        .btn-success { background: #4CAF50; }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
 
-<header>
-    Proyecto Integrado – Sistema Obstétrico
-</header>
+    {% if request.path != "/login/" and request.path != "/registrar/" %}
+    <nav class="nav">
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/madres/">🤰 Madres</a></li>
+            <li><a href="/partos/">🩺 Partos</a></li>
+            <li><a href="/rn/">🍼 Recién Nacidos</a></li>
+            <li><a href="/dashboard/">📊 Dashboard</a></li>
+            <li><a href="/login/">🚪 Salir</a></li>
+        </ul>
+    </nav>
+    {% endif %}
 
-<nav>
-    <a href="/">Inicio</a>
-    <a href="/madres/">Madres</a>
-    <a href="/partos/">Partos</a>
-    <a href="/rn/">Recién Nacidos</a>
-    <a href="/admin/">Admin</a>
-</nav>
-
-<div class="container">
-    {% block content %}
-    {% endblock %}
-</div>
-
-<footer>
-    © 2025 – Proyecto INACAP
-</footer>
+    <main class="content">
+        {% block content %}
+        {% endblock %}
+    </main>
 
 </body>
 </html>

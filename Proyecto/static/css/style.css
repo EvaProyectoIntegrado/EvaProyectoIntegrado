@@ -1,0 +1,79 @@
+/* Fondo general estilo bebé */
+body {
+    background: linear-gradient(180deg, #ffe6f2 0%, #e5f2ff 100%);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+/* Contenedor general */
+.content {
+    width: 90%;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 35px;
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Navbar */
+.nav {
+    background: #ffccdd;
+    padding: 15px 0;
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.1);
+}
+.nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.nav a {
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: 600;
+    color: #444;
+}
+
+/* Formularios */
+form {
+    margin-top: 25px;
+}
+.form-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: #444;
+    font-weight: bold;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    font-weight: 600;
+    color: #555;
+}
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+/* Botón */
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #ffaac7;
+    border: none;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-primary:hover {
+    background: #ff96bd;
+}

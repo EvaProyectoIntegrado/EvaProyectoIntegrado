@@ -1,289 +1,296 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import Usuario, Madre, Parto, RecienNacido, InformeREM
-from .serializers import MadreSerializer, PartoSerializer, RecienNacidoSerializer, InformeREMSerializer
-import bcrypt
-import jwt
-from datetime import datetime, timedelta, date
-from django.db.models import Count
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from datetime import datetime
+from django.contrib.auth.hashers import make_password, check_password
 
-# Seguridad
-from .auth import verificar_token, requiere_rol
+from .models import Usuario, Madre, Parto, RecienNacido
 
-
-CLAVE_SECRETA = "CLAVESECRETA12345"
-
-
-# ============================
-#       USUARIOS
-# ============================
-
-@api_view(['POST'])
+# =========================================================
+#                 REGISTRO DE USUARIO
+# =========================================================
+@csrf_exempt
 def registrar_usuario(request):
-    try:
-        nombre = request.data.get('nombre')
-        email = request.data.get('email')
-        contraseña = request.data.get('contraseña')
-        rol = request.data.get('rol')
+    if request.method != "POST":
+        return JsonResponse({"success": False, "msg": "Método no permitido"})
 
-        contraseña_hash = bcrypt.hashpw(contraseña.encode('utf-8'), bcrypt.gensalt())
+    data = json.loads(request.body)
 
-        Usuario.objects.create(
-            nombre=nombre,
-            email=email,
-            contraseña=contraseña_hash.decode('utf-8'),
-            rol=rol
-        )
+    nombre = data.get("nombre")
+    email = data.get("email")
+    contraseña = data.get("contraseña")
+    rol = data.get("rol")
 
-        return Response({"mensaje": "Usuario registrado"}, status=201)
+    if not nombre or not email or not contraseña or not rol:
+        return JsonResponse({"success": False, "msg": "Campos incompletos"})
 
-    except Exception as e:
-        return Response({"error": str(e)}, status=400)
+    if Usuario.objects.filter(email=email).exists():
+        return JsonResponse({"success": False, "msg": "El email ya está registrado"})
+
+    usuario = Usuario.objects.create(
+        nombre=nombre,
+        email=email,
+        contraseña=make_password(contraseña),
+        rol=rol
+    )
+
+    return JsonResponse({"success": True, "msg": "Usuario registrado", "id": usuario.id})
 
 
-
-@api_view(['POST'])
+# =========================================================
+#                 LOGIN
+# =========================================================
+@csrf_exempt
 def login(request):
-    email = request.data.get('email')
-    contraseña = request.data.get('contraseña')
+    if request.method != "POST":
+        return JsonResponse({"success": False, "msg": "Método no permitido"})
+
+    data = json.loads(request.body)
+    email = data.get("usuario")
+    password = data.get("password")
 
     try:
         usuario = Usuario.objects.get(email=email)
+        if check_password(password, usuario.contraseña):
+            return JsonResponse({"success": True, "usuario": usuario.nombre})
+        else:
+            return JsonResponse({"success": False, "msg": "Contraseña incorrecta"})
     except Usuario.DoesNotExist:
-        return Response({"error": "Usuario no existe"}, status=404)
-
-    if bcrypt.checkpw(contraseña.encode('utf-8'), usuario.contraseña.encode('utf-8')):
-
-        payload = {
-            'id': usuario.id,
-            'rol': usuario.rol,
-            'exp': datetime.utcnow() + timedelta(hours=4)
-        }
-
-        token = jwt.encode(payload, CLAVE_SECRETA, algorithm='HS256')
-
-        return Response({"token": token, "rol": usuario.rol}, status=200)
-
-    return Response({"error": "Contraseña incorrecta"}, status=400)
+        return JsonResponse({"success": False, "msg": "Usuario no existe"})
 
 
+# =========================================================
+#                       MADRES CRUD
+# =========================================================
 
-# ============================
-#         CRUD MADRE
-# ============================
-
-@api_view(['POST'])
-@requiere_rol("admin", "matrona")
-def crear_madre(request):
-    serializer = MadreSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
-
-
-@api_view(['GET'])
-@verificar_token
 def listar_madres(request):
-    madres = Madre.objects.all()
-    serializer = MadreSerializer(madres, many=True)
-    return Response(serializer.data)
+    madres = list(Madre.objects.values())
+    return JsonResponse(madres, safe=False)
 
 
-@api_view(['GET'])
-@verificar_token
+@csrf_exempt
+def crear_madre(request):
+    data = json.loads(request.body)
+
+    madre = Madre.objects.create(
+        rut=data["rut"],
+        nombre=data["nombre"],
+        edad=data["edad"],
+        direccion=data["direccion"]
+    )
+    return JsonResponse({"msg": "Madre creada", "id": madre.id})
+
+
 def obtener_madre(request, id):
     try:
-        madre = Madre.objects.get(id=id)
-        serializer = MadreSerializer(madre)
-        return Response(serializer.data)
+        m = Madre.objects.get(id=id)
+        return JsonResponse({
+            "id": m.id,
+            "rut": m.rut,
+            "nombre": m.nombre,
+            "edad": m.edad,
+            "direccion": m.direccion
+        })
     except Madre.DoesNotExist:
-        return Response({"error": "Madre no encontrada"}, status=404)
+        return JsonResponse({"msg": "Madre no encontrada"})
 
 
-@api_view(['PUT'])
-@requiere_rol("admin", "matrona")
+@csrf_exempt
 def actualizar_madre(request, id):
     try:
-        madre = Madre.objects.get(id=id)
+        m = Madre.objects.get(id=id)
     except Madre.DoesNotExist:
-        return Response({"error": "Madre no encontrada"}, status=404)
+        return JsonResponse({"msg": "Madre no existe"})
 
-    serializer = MadreSerializer(madre, data=request.data, partial=True)
+    data = json.loads(request.body)
+    m.rut = data.get("rut", m.rut)
+    m.nombre = data.get("nombre", m.nombre)
+    m.edad = data.get("edad", m.edad)
+    m.direccion = data.get("direccion", m.direccion)
+    m.save()
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-
-    return Response(serializer.errors, status=400)
+    return JsonResponse({"msg": "Madre actualizada"})
 
 
-@api_view(['DELETE'])
-@requiere_rol("admin")
+@csrf_exempt
 def eliminar_madre(request, id):
     try:
-        madre = Madre.objects.get(id=id)
-        madre.delete()
-        return Response({"mensaje": "Madre eliminada correctamente"})
+        m = Madre.objects.get(id=id)
+        m.delete()
+        return JsonResponse({"msg": "Madre eliminada"})
     except Madre.DoesNotExist:
-        return Response({"error": "Madre no encontrada"}, status=404)
+        return JsonResponse({"msg": "Madre no existe"})
 
 
+# =========================================================
+#                     PARTOS CRUD
+# =========================================================
 
-# ============================
-#         CRUD PARTO
-# ============================
-
-@api_view(['POST'])
-@requiere_rol("admin", "matrona")
-def crear_parto(request):
-    serializer = PartoSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
-
-
-@api_view(['GET'])
-@verificar_token
 def listar_partos(request):
-    partos = Parto.objects.all()
-    serializer = PartoSerializer(partos, many=True)
-    return Response(serializer.data)
+    partos = []
+    for p in Parto.objects.all():
+        partos.append({
+            "id": p.id,
+            "madre": p.madre.id,
+            "madre_nombre": p.madre.nombre,
+            "fecha_parto": str(p.fecha_parto),
+            "tipo_parto": p.tipo_parto,
+            "observaciones": p.observaciones
+        })
+    return JsonResponse(partos, safe=False)
 
 
-@api_view(['GET'])
-@verificar_token
+@csrf_exempt
+def crear_parto(request):
+    data = json.loads(request.body)
+    madre = Madre.objects.get(id=data["madre"])
+
+    parto = Parto.objects.create(
+        madre=madre,
+        fecha_parto=data["fecha_parto"],
+        tipo_parto=data["tipo_parto"],
+        observaciones=data.get("observaciones", "")
+    )
+
+    return JsonResponse({"msg": "Parto registrado", "id": parto.id})
+
+
 def obtener_parto(request, id):
     try:
-        parto = Parto.objects.get(id=id)
-        serializer = PartoSerializer(parto)
-        return Response(serializer.data)
+        p = Parto.objects.get(id=id)
+        return JsonResponse({
+            "id": p.id,
+            "madre": p.madre.id,
+            "madre_nombre": p.madre.nombre,
+            "fecha_parto": str(p.fecha_parto),
+            "tipo_parto": p.tipo_parto,
+            "observaciones": p.observaciones,
+        })
     except Parto.DoesNotExist:
-        return Response({"error": "Parto no encontrado"}, status=404)
+        return JsonResponse({"msg": "Parto no existe"})
 
 
-@api_view(['PUT'])
-@requiere_rol("admin", "matrona")
+@csrf_exempt
 def actualizar_parto(request, id):
     try:
-        parto = Parto.objects.get(id=id)
+        p = Parto.objects.get(id=id)
     except Parto.DoesNotExist:
-        return Response({"error": "Parto no encontrado"}, status=404)
+        return JsonResponse({"msg": "Parto no existe"})
 
-    serializer = PartoSerializer(parto, data=request.data, partial=True)
+    data = json.loads(request.body)
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
+    if "madre" in data:
+        p.madre = Madre.objects.get(id=data["madre"])
 
-    return Response(serializer.errors, status=400)
+    p.fecha_parto = data.get("fecha_parto", p.fecha_parto)
+    p.tipo_parto = data.get("tipo_parto", p.tipo_parto)
+    p.observaciones = data.get("observaciones", p.observaciones)
+    p.save()
+
+    return JsonResponse({"msg": "Parto actualizado"})
 
 
-@api_view(['DELETE'])
-@requiere_rol("admin")
+@csrf_exempt
 def eliminar_parto(request, id):
     try:
-        parto = Parto.objects.get(id=id)
-        parto.delete()
-        return Response({"mensaje": "Parto eliminado correctamente"})
+        p = Parto.objects.get(id=id)
+        p.delete()
+        return JsonResponse({"msg": "Parto eliminado"})
     except Parto.DoesNotExist:
-        return Response({"error": "Parto no encontrado"}, status=404)
+        return JsonResponse({"msg": "Parto no existe"})
 
 
+# =========================================================
+#                  RN CRUD
+# =========================================================
 
-# ============================
-#     CRUD RECIÉN NACIDO
-# ============================
-
-@api_view(['POST'])
-@requiere_rol("admin", "matrona")
-def crear_rn(request):
-    serializer = RecienNacidoSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
-
-
-@api_view(['GET'])
-@verificar_token
 def listar_rn(request):
-    rns = RecienNacido.objects.all()
-    serializer = RecienNacidoSerializer(rns, many=True)
-    return Response(serializer.data)
+    data = list(RecienNacido.objects.values())
+    return JsonResponse(data, safe=False)
 
 
-@api_view(['GET'])
-@verificar_token
+@csrf_exempt
+def crear_rn(request):
+    data = json.loads(request.body)
+    parto = Parto.objects.get(id=data["parto"])
+
+    rn = RecienNacido.objects.create(
+        parto=parto,
+        peso=data["peso"],
+        talla=data["talla"],
+        apgar=data["apgar"]
+    )
+
+    return JsonResponse({"msg": "RN creado", "id": rn.id})
+
+
 def obtener_rn(request, id):
     try:
-        rn = RecienNacido.objects.get(id=id)
-        serializer = RecienNacidoSerializer(rn)
-        return Response(serializer.data)
+        r = RecienNacido.objects.get(id=id)
+        return JsonResponse({
+            "id": r.id,
+            "parto": r.parto.id,
+            "peso": r.peso,
+            "talla": r.talla,
+            "apgar": r.apgar
+        })
     except RecienNacido.DoesNotExist:
-        return Response({"error": "RN no encontrado"}, status=404)
+        return JsonResponse({"msg": "RN no existe"})
 
 
-@api_view(['PUT'])
-@requiere_rol("admin", "matrona")
+@csrf_exempt
 def actualizar_rn(request, id):
     try:
-        rn = RecienNacido.objects.get(id=id)
+        r = RecienNacido.objects.get(id=id)
     except RecienNacido.DoesNotExist:
-        return Response({"error": "RN no encontrado"}, status=404)
+        return JsonResponse({"msg": "RN no existe"})
 
-    serializer = RecienNacidoSerializer(rn, data=request.data, partial=True)
+    data = json.loads(request.body)
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
+    r.peso = data.get("peso", r.peso)
+    r.talla = data.get("talla", r.talla)
+    r.apgar = data.get("apgar", r.apgar)
+    r.save()
 
-    return Response(serializer.errors, status=400)
+    return JsonResponse({"msg": "RN actualizado"})
 
 
-@api_view(['DELETE'])
-@requiere_rol("admin")
+@csrf_exempt
 def eliminar_rn(request, id):
     try:
-        rn = RecienNacido.objects.get(id=id)
-        rn.delete()
-        return Response({"mensaje": "RN eliminado correctamente"})
+        r = RecienNacido.objects.get(id=id)
+        r.delete()
+        return JsonResponse({"msg": "RN eliminado"})
     except RecienNacido.DoesNotExist:
-        return Response({"error": "RN no encontrado"}, status=404)
+        return JsonResponse({"msg": "RN no existe"})
 
 
+# =========================================================
+#                    PDF REM22
+# =========================================================
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
-# ============================
-#       REPORTE REM22
-# ============================
+def descargar_rem22(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Informe_REM22.pdf"'
 
-@api_view(['GET'])
-@requiere_rol("admin", "jefe_area", "medico")
-def generar_informe_rem(request):
+    pdf = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
 
-    fecha_actual = date.today()
+    pdf.setFont("Helvetica-Bold", 20)
+    pdf.drawString(40, height - 40, "Informe Clínico – REM22")
 
+    total_madres = Madre.objects.count()
     total_partos = Parto.objects.count()
     total_rn = RecienNacido.objects.count()
 
-    partos_por_tipo = (
-        Parto.objects.values("tipo_parto")
-        .annotate(total=Count("tipo_parto"))
-    )
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(40, height - 80, f"Madres registradas: {total_madres}")
+    pdf.drawString(40, height - 100, f"Partos registrados: {total_partos}")
+    pdf.drawString(40, height - 120, f"Recién nacidos: {total_rn}")
 
-    InformeREM.objects.create(
-        fecha=fecha_actual,
-        total_partos=total_partos,
-        total_rn=total_rn
-    )
+    pdf.showPage()
+    pdf.save()
 
-    data = {
-        "fecha": fecha_actual,
-        "total_partos": total_partos,
-        "total_rn": total_rn,
-        "partos_por_tipo": list(partos_por_tipo),
-        "mensaje": "Informe REM22 generado correctamente"
-    }
-
-    return Response(data, status=200)
+    return response

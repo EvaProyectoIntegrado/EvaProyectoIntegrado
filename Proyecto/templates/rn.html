@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Registro de Recién Nacidos</h2>
+
+<div class="card">
+    <h3>➕ Registrar RN</h3>
+
+    <form id="formCrearRn" class="form-grid">
+
+        <div class="form-group">
+            <label>ID Parto:</label>
+            <input type="number" id="parto" required>
+        </div>
+
+        <div class="form-group">
+            <label>Peso (gramos):</label>
+            <input type="number" id="peso" required>
+        </div>
+
+        <div class="form-group">
+            <label>Talla (cm):</label>
+            <input type="number" id="talla" required>
+        </div>
+
+        <div class="form-group">
+            <label>APGAR:</label>
+            <input type="number" id="apgar" required min="0" max="10">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar RN</button>
+    </form>
+</div>
+
+<hr>
+
+<div class="card">
+    <h3>📋 Listado RN</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Parto</th>
+                <th>Peso</th>
+                <th>Talla</th>
+                <th>APGAR</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tablaRn"></tbody>
+    </table>
+</div>
+
+<script>
+function cargarRn(){
+    fetch("/api/rn/")
+        .then(r => r.json())
+        .then(data => {
+            let html = "";
+            data.forEach(r => {
+                html += `
+                <tr>
+                    <td>${r.id}</td>
+                    <td>${r.parto}</td>
+                    <td>${r.peso}</td>
+                    <td>${r.talla}</td>
+                    <td>${r.apgar}</td>
+                    <td><button onclick="eliminarRn(${r.id})" class="btn btn-danger">Eliminar</button></td>
+                </tr>`;
+            });
+            document.getElementById("tablaRn").innerHTML = html;
+        });
+}
+
+document.getElementById("formCrearRn").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    fetch("/api/rn/crear/", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+            parto: document.getElementById("parto").value,
+            peso: document.getElementById("peso").value,
+            talla: document.getElementById("talla").value,
+            apgar: document.getElementById("apgar").value
+        })
+    }).then(() => {
+        cargarRn();
+        e.target.reset();
+    });
+});
+
+function eliminarRn(id){
+    fetch(`/api/rn/${id}/eliminar/`, {method:"DELETE"})
+        .then(() => cargarRn());
+}
+
+cargarRn();
+</script>
+
+{% endblock %}

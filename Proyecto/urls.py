@@ -1,58 +1,85 @@
-"""
-URL configuration for Proyecto project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render
-from api import views     # <---- IMPORTACIÓN CORRECTA
+from api import views as api
 
-# HOME (para evitar error en "/")
+# -----------------------
+#  VISTAS HTML
+# -----------------------
+
 def home(request):
-    return render(request, 'base.html')
+    return render(request, "base.html")
+
+def login_view(request):
+    return render(request, "login.html")
+
+def registrar_view(request):
+    return render(request, "registrar.html")
+
+def dashboard(request):
+    return render(request, "dashboard.html")
+
+def vista_madres(request):
+    return render(request, "madres.html")
+
+def vista_partos(request):
+    return render(request, "partos.html")
+
+def vista_rn(request):
+    return render(request, "rn.html")
+
 
 urlpatterns = [
-    path('', home, name='home'),   # <---- RUTA PRINCIPAL
 
-    path('admin/', admin.site.urls),
+    # HOME
+    path("", home),
 
-    # USUARIOS
-    path('api/registrar/', views.registrar_usuario),
-    path('api/login/', views.login),
+    # LOGIN & REGISTRO (VISUALES)
+    path("login/", login_view),
+    path("registrar/", registrar_view),
 
-    # MADRE
-    path('api/madre/crear/', views.crear_madre),
-    path('api/madres/', views.listar_madres),
-    path('api/madre/<int:id>/', views.obtener_madre),
-    path('api/madre/<int:id>/actualizar/', views.actualizar_madre),
-    path('api/madre/<int:id>/eliminar/', views.eliminar_madre),
+    # PANTALLAS PRINCIPALES
+    path("dashboard/", dashboard),
+    path("madres/", vista_madres),
+    path("partos/", vista_partos),
+    path("rn/", vista_rn),
 
-    # PARTO
-    path('api/parto/crear/', views.crear_parto),
-    path('api/partos/', views.listar_partos),
-    path('api/parto/<int:id>/', views.obtener_parto),
-    path('api/parto/<int:id>/actualizar/', views.actualizar_parto),
-    path('api/parto/<int:id>/eliminar/', views.eliminar_parto),
+    # PDF REM22
+    path("descargar-rem22/", api.descargar_rem22),
 
-    # RN
-    path('api/rn/crear/', views.crear_rn),
-    path('api/rn/', views.listar_rn),
-    path('api/rn/<int:id>/', views.obtener_rn),
-    path('api/rn/<int:id>/actualizar/', views.actualizar_rn),
-    path('api/rn/<int:id>/eliminar/', views.eliminar_rn),
+    # =========================
+    #         API
+    # =========================
 
-    # INFORME REM22
-    path('api/reportes/rem22/', views.generar_informe_rem),
+    # Usuarios
+    path('api/registrar/', api.registrar_usuario),
+    path('api/login/', api.login),
+
+    # Madres
+    path('api/madre/crear/', api.crear_madre),
+    path('api/madres/', api.listar_madres),
+    path('api/madre/<int:id>/', api.obtener_madre),
+    path('api/madre/<int:id>/actualizar/', api.actualizar_madre),
+    path('api/madre/<int:id>/eliminar/', api.eliminar_madre),
+
+    # Partos
+    path('api/parto/crear/', api.crear_parto),
+    path('api/partos/', api.listar_partos),
+    path('api/parto/<int:id>/', api.obtener_parto),
+    path('api/parto/<int:id>/actualizar/', api.actualizar_parto),
+    path('api/parto/<int:id>/eliminar/', api.eliminar_parto),
+
+    # Recién nacidos
+    path('api/rn/crear/', api.crear_rn),
+    path('api/rn/', api.listar_rn),
+    path('api/rn/<int:id>/', api.obtener_rn),
+    path('api/rn/<int:id>/actualizar/', api.actualizar_rn),
+    path('api/rn/<int:id>/eliminar/', api.eliminar_rn),
+
+    # Reporte API
+    path('api/reportes/rem22/', api.descargar_rem22),
+
+
+    # ADMIN
+    path("admin/", admin.site.urls),
 ]

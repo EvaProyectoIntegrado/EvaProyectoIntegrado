@@ -3,22 +3,78 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Iniciar Sesión</h2>
-    <form method="post">
-        {% csrf_token %}
-        
-        <div class="form-group">
-            <label>Nombre de usuario:</label>
-            <input type="text" name="username" class="form-control" required>
-        </div>
 
-        <div class="form-group">
-            <label>Contraseña:</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
+<div class="login-container">
 
-        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+    <h2 class="titulo-login">Iniciar Sesión</h2>
+
+    <!-- ESTE FORM ES CLAVE: autocomplete="off" -->
+    <form id="formLogin" autocomplete="off">
+
+        <label class="label">Correo electrónico:</label>
+        <input id="email" type="email" class="input" placeholder="ejemplo@correo.com"
+               autocomplete="off" required>
+
+        <label class="label">Contraseña:</label>
+        <input id="password" type="password" class="input" placeholder="Contraseña"
+               autocomplete="new-password" required>
+
+        <button id="btnLogin" class="btn-login">Ingresar</button>
+
+        <p class="texto-register">
+            ¿No tienes cuenta? <a href="/registrar/">Crear cuenta</a>
+        </p>
+
     </form>
 </div>
+
+<style>
+.login-container {
+    max-width: 420px;
+    margin: auto;
+    padding: 30px;
+    text-align: center;
+}
+
+.titulo-login {
+    color: #6c4ccf;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.label {
+    display: block;
+    text-align: left;
+    margin-top: 10px;
+    color: #444;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.btn-login {
+    background: #ffb3d9;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-login:hover {
+    background: #ff99cc;
+}
+</style>
+
+<!-- IMPORTANTE: carga el JS -->
+<script src="/static/js/login.js"></script>
+
 {% endblock %}

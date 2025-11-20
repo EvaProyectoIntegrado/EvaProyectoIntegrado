@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
     const btnRegister = document.getElementById("btnRegister");
 
@@ -7,22 +7,23 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    btnRegister.addEventListener("click", async function (e) {
-        e.preventDefault();
+    btnRegister.addEventListener("click", async () => {
 
         const nombre = document.getElementById("nombre").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
+        const rol = document.getElementById("rol").value.trim();
 
-        if (!nombre || !email || !password) {
-            alert("Completa todos los campos.");
+        if (!nombre || !email || !password || !rol) {
+            alert("Campos incompletos");
             return;
         }
 
         const data = {
             nombre: nombre,
             email: email,
-            contraseña: password
+            contraseña: password,
+            rol: rol,
         };
 
         try {
@@ -31,28 +32,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
             });
 
             const result = await response.json();
-            console.log(result);
 
             if (result.success) {
-                alert("Cuenta creada correctamente ✨");
-
-                // guardar sesión directa si quieres
-                sessionStorage.setItem("usuario", result.rol);
-                sessionStorage.setItem("email", email);
-
+                alert("Cuenta creada con éxito 🎉");
                 window.location.href = "/login/";
-
             } else {
-                alert(result.msg);
+                alert(result.msg || "Error en el registro.");
             }
 
         } catch (error) {
-            console.error("Error en registro:", error);
-            alert("Error al registrar usuario");
+            console.error("Error:", error);
+            alert("Error en el servidor");
         }
     });
 });
+

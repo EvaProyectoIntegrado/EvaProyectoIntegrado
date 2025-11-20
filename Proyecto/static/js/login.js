@@ -1,51 +1,41 @@
-document.addEventListener("DOMContentLoaded", function () {
+console.log("Login JS cargado correctamente");
 
-    const btn = document.getElementById("btnLogin");
-    const emailInput = document.getElementById("email");
-    const passInput = document.getElementById("password");
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-    if (!btn) {
-        console.error("btnLogin no existe en el DOM");
+    const emailValue = document.getElementById("email").value.trim();
+    const passwordValue = document.getElementById("password").value.trim();
+
+    console.log("Email enviado:", emailValue);
+    console.log("Password enviado:", passwordValue);
+
+    if (!emailValue || !passwordValue) {
+        alert("Completa todos los campos");
         return;
     }
 
-    btn.addEventListener("click", async function (e) {
-        e.preventDefault();
-
-        const email = emailInput.value.trim();
-        const password = passInput.value.trim();
-
-        if (!email || !password) {
-            alert("Completa todos los campos.");
-            return;
-        }
-
-        const data = {
-            email: email,
-            contraseña: password
-        };
-
-        try {
-            const response = await fetch("/api/login/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                sessionStorage.setItem("usuario", result.rol);
-                window.location.href = "/dashboard/";
-            } else {
-                alert(result.msg);
-            }
-
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error de conexión con el servidor.");
-        }
+    const response = await fetch("/api/login/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+        },
+        body: JSON.stringify({
+            usuario: emailValue,   // 👈 EXACTO como lo pide la vista
+            password: passwordValue
+        })
     });
+
+    const data = await response.json();
+
+    console.log("Respuesta del backend:", data);
+
+    if (data.success) {
+        alert("Bienvenido " + data.usuario);
+        window.location.href = "/dashboard/";
+    } else {
+        alert(data.msg);
+    }
 });
+
+

@@ -40,23 +40,42 @@ def registrar_usuario(request):
 # =========================================================
 #                 LOGIN
 # =========================================================
+# =========================================================
+#                      LOGIN CORREGIDO
+# =========================================================
 @csrf_exempt
 def login(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "msg": "Método no permitido"})
 
-    data = json.loads(request.body)
-    email = data.get("usuario")
+    try:
+        data = json.loads(request.body)
+    except:
+        return JsonResponse({"success": False, "msg": "JSON inválido"})
+
+    # 👉 Lo que envía tu login.js
+    email = data.get("usuario")   # 👈 ESTE ES EL FIX
     password = data.get("password")
+
+    if not email or not password:
+        return JsonResponse({"success": False, "msg": "Campos incompletos"})
 
     try:
         usuario = Usuario.objects.get(email=email)
-        if check_password(password, usuario.contraseña):
-            return JsonResponse({"success": True, "usuario": usuario.nombre})
-        else:
-            return JsonResponse({"success": False, "msg": "Contraseña incorrecta"})
     except Usuario.DoesNotExist:
         return JsonResponse({"success": False, "msg": "Usuario no existe"})
+
+    if check_password(password, usuario.contraseña):
+        return JsonResponse({
+            "success": True,
+            "msg": "Login exitoso",
+            "usuario": usuario.nombre,
+            "rol": usuario.rol
+        })
+    else:
+        return JsonResponse({"success": False, "msg": "Contraseña incorrecta"})
+
+
 
 
 # =========================================================

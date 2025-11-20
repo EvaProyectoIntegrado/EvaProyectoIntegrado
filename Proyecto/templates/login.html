@@ -1,32 +1,36 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}👶 Iniciar Sesión{% endblock %}
+{% block title %} 👶 Iniciar Sesión {% endblock %}
 
 {% block content %}
 
-<h2 class="form-title">👶 Iniciar Sesión</h2>
+<div class="form-card">
+    <h2 class="form-title"><span class="emoji">👶</span> Iniciar Sesión</h2>
 
-<form id="loginForm">
-    {% csrf_token %}
+    <form id="loginForm">
+        {% csrf_token %}
 
-    <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" id="email" class="form-control" required>
-    </div>
+        <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" id="email" placeholder="tuemail@ejemplo.com">
+        </div>
 
-    <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="password" class="form-control" required>
-    </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="password" placeholder="********">
+        </div>
 
-    <button id="btnLogin" class="btn-primary">Ingresar</button>
-</form>
+        <button type="submit" id="btnLogin" class="btn-primary">Ingresar</button>
+    </form>
 
-<p style="margin-top:20px; text-align:center;">
-    ¿No tienes cuenta?
-    <a href="/registrar/">Crear cuenta</a>
-</p>
+    <p class="footer-text">
+        ¿No tienes cuenta?
+        <a href="/registrar/">Crear cuenta</a>
+    </p>
+</div>
 
 <script src="{% static 'js/login.js' %}"></script>
+
 {% endblock %}
+

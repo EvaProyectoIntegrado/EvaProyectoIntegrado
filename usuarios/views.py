@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from api.models import Usuario 
 
 def login_view(request):
     return render(request, "login.html")
@@ -19,4 +20,6 @@ def rn_view(request):
     return render(request, "rn.html")
 
 def usuarios_view(request):
-    return render(request, "usuarios.html")
+    usuarios = Usuario.objects.all()
+    return render(request, "usuarios.html", {"usuarios": usuarios})
+

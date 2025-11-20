@@ -16,9 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.shortcuts import render
 from api import views     # <---- IMPORTACIÓN CORRECTA
 
+# HOME (para evitar error en "/")
+def home(request):
+    return render(request, 'base.html')
+
 urlpatterns = [
+    path('', home, name='home'),   # <---- RUTA PRINCIPAL
+
     path('admin/', admin.site.urls),
 
     # USUARIOS

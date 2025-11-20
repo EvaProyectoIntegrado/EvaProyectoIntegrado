@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Integrado</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+        }
+
+        header {
+            background: #2c3e50;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        nav {
+            background: #34495e;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #1abc9c;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    Proyecto Integrado – Sistema Obstétrico
+</header>
+
+<nav>
+    <a href="/">Inicio</a>
+    <a href="/api/madres/">Madres</a>
+    <a href="/api/partos/">Partos</a>
+    <a href="/api/rn/">Recién Nacidos</a>
+    <a href="/admin/">Admin</a>
+</nav>
+
+<div class="container">
+    {% block content %}
+    <h2>Bienvenida/o</h2>
+    <p>Este es el sistema de registro obstétrico. Usa el menú para navegar o prueba las rutas del API.</p>
+    {% endblock %}
+</div>
+
+<footer>
+    © {{year|default:'2025'}} – Proyecto INACAP
+</footer>
+
+</body>
+</html>

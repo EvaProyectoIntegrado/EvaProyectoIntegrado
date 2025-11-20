@@ -125,12 +125,14 @@
     {% if request.path != "/login/" and request.path != "/registrar/" %}
     <nav class="nav">
         <ul>
-            <li><a href="/">🏠 Inicio</a></li>
-            <li><a href="/madres/">🤰 Madres</a></li>
-            <li><a href="/partos/">🩺 Partos</a></li>
-            <li><a href="/rn/">🍼 Recién Nacidos</a></li>
-            <li><a href="/dashboard/">📊 Dashboard</a></li>
-            <li><a href="/login/">🚪 Salir</a></li>
+           <li id="menu-inicio"><a href="/">🏠 Inicio</a></li>
+            <li id="menu-madres"><a href="/madres/">🤰 Madres</a></li>
+            <li id="menu-partos"><a href="/partos/">🩺 Partos</a></li>
+            <li id="menu-rn"><a href="/rn/">🍼 Recién Nacidos</a></li>
+            <li id="menu-dashboard"><a href="/dashboard/">📊 Dashboard</a></li>
+            <li id="menu-usuarios"><a href="/usuarios/">👥 Usuarios</a></li>
+            <li id="menu-salir"><a href="/login/">🚪 Salir</a></li>
+
         </ul>
     </nav>
     {% endif %}
@@ -139,6 +141,29 @@
         {% block content %}
         {% endblock %}
     </main>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const rol = sessionStorage.getItem("rol");
+
+    // Ocultar cosas según rol
+    if (rol === "medico") {
+        document.querySelector("#menu-madres").style.display = "none";
+        document.querySelector("#menu-partos").style.display = "none";
+    }
+
+    if (rol === "jefe_area") {
+        document.querySelector("#menu-madres").style.display = "none";
+        document.querySelector("#menu-partos").style.display = "none";
+        document.querySelector("#menu-rn").style.display = "none";
+    }
+
+    if (rol === "matrona") {
+        document.querySelector("#menu-usuarios").style.display = "none";
+    }
+});
+</script>
+
 
 </body>
 </html>

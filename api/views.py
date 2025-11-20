@@ -1,10 +1,25 @@
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from datetime import datetime
+from .models import Usuario
 from django.contrib.auth.hashers import make_password, check_password
 
 from .models import Usuario, Madre, Parto, RecienNacido
+from .auth import requiere_rol
+from django.shortcuts import render
+
+def pagina_inicio(request):
+    return render(request, "dashboard.html")
+
+def pagina_login(request):
+    return render(request, "login.html")
+
+def pagina_registro(request):
+    return render(request, "registrar.html")
+
+def pagina_dashboard(request):
+    return render(request, "dashboard.html")
+
 
 # =========================================================
 #                 REGISTRO DE USUARIO
@@ -38,10 +53,7 @@ def registrar_usuario(request):
 
 
 # =========================================================
-#                 LOGIN
-# =========================================================
-# =========================================================
-#                      LOGIN CORREGIDO
+#                      LOGIN
 # =========================================================
 @csrf_exempt
 def login(request):
@@ -53,8 +65,7 @@ def login(request):
     except:
         return JsonResponse({"success": False, "msg": "JSON inválido"})
 
-    # 👉 Lo que envía tu login.js
-    email = data.get("usuario")   # 👈 ESTE ES EL FIX
+    email = data.get("email")
     password = data.get("password")
 
     if not email or not password:
@@ -76,6 +87,28 @@ def login(request):
         return JsonResponse({"success": False, "msg": "Contraseña incorrecta"})
 
 
+# =========================================================
+#               DASHBOARD (Protegido por roles)
+# =========================================================
+@requiere_rol("admin", "matrona", "medico", "jefe_area")
+def dashboard_datos(request):
+
+    return JsonResponse({
+        "madres": Madre.objects.count(),
+        "partos": Parto.objects.count(),
+        "rn": RecienNacido.objects.count()
+    })
+
+
+# =========================================================
+#                  LISTAR USUARIOS (ADMIN / JEFE)
+# =========================================================
+@requiere_rol("admin", "jefe_area")
+def listar_usuarios(request):
+
+    data = list(Usuario.objects.values("id", "nombre", "email", "rol"))
+
+    return JsonResponse({"usuarios": data})
 
 
 # =========================================================
@@ -111,7 +144,7 @@ def obtener_madre(request, id):
             "direccion": m.direccion
         })
     except Madre.DoesNotExist:
-        return JsonResponse({"msg": "Madre no encontrada"})
+        return JsonResponse({"msg": "Madre no encontrada"}, status=404)
 
 
 @csrf_exempt
@@ -313,3 +346,4 @@ def descargar_rem22(request):
     pdf.save()
 
     return response
+

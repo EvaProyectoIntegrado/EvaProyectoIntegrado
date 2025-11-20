@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %} 👥 Gestión de Usuarios {% endblock %}
+
+{% block content %}
+
+<div class="usuarios-container">
+    <h2 class="usuarios-title">👥 Gestión de Usuarios</h2>
+
+    <p class="usuarios-desc">Aquí puedes ver la lista de usuarios registrados en el sistema.</p>
+
+    <table class="usuarios-table">
+        <thead>
+            <tr>
+                <th>👤 Nombre</th>
+                <th>📧 Email</th>
+                <th>🧩 Rol</th>
+            </tr>
+        </thead>
+        <tbody id="usuarios-body">
+            <!-- Los datos se cargarán por JS -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    async function cargarUsuarios() {
+        const response = await fetch("/api/usuarios/");
+        const data = await response.json();
+
+        const tbody = document.getElementById("usuarios-body");
+        tbody.innerHTML = "";
+
+        data.forEach(u => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${u.nombre}</td>
+                    <td>${u.email}</td>
+                    <td>${u.rol}</td>
+                </tr>
+            `;
+        });
+    }
+
+    cargarUsuarios();
+</script>
+
+<style>
+    .usuarios-container {
+        background: white;
+        padding: 35px;
+        border-radius: 20px;
+        max-width: 900px;
+        margin: 40px auto;
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+    }
+
+    .usuarios-title {
+        text-align: center;
+        font-size: 32px;
+        margin-bottom: 20px;
+        color: #444;
+    }
+
+    .usuarios-desc {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #555;
+        font-size: 18px;
+    }
+
+    .usuarios-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 18px;
+    }
+
+    .usuarios-table th {
+        background: #ffdde5;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    .usuarios-table td {
+        background: #fff6f8;
+        padding: 12px;
+        border-bottom: 1px solid #f3c2cb;
+        text-align: center;
+    }
+
+    .usuarios-table tr:hover td {
+        background: #ffe9f0;
+    }
+</style>
+
+{% endblock %}

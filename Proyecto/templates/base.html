@@ -1,170 +1,46 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}👶 Sistema Obstétrico Bebé{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: "Poppins", sans-serif;
-            background: linear-gradient(to bottom, #ffe2ec, #d9ecff);
-        }
-
-        /* ---- NAVBAR ---- */
-        .nav {
-            background-color: #ffd1df;
-            padding: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .nav ul {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            list-style: none;
-            justify-content: center;
-            gap: 25px;
-        }
-
-        .nav a {
-            text-decoration: none;
-            color: #444;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .nav a:hover {
-            color: #ff4f87;
-        }
-
-        /* ---- CONTENEDOR PRINCIPAL ---- */
-        .content {
-            max-width: 650px;
-            margin: 50px auto;
-            background: white;
-            padding: 40px 50px;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 32px;
-            color: #444;
-            margin-bottom: 30px;
-        }
-
-        .emoji {
-            font-size: 40px;
-            margin-right: 10px;
-        }
-
-        /* ---- Inputs ---- */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-            color: #555;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 2px solid #e0e0e0;
-            font-size: 15px;
-        }
-
-        /* Botón pastel */
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background-color: #ffb2c8;
-            border: none;
-            border-radius: 12px;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #ff9db9;
-        }
-
-        .footer-text {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 15px;
-        }
-
-        .footer-text a {
-            color: #7c57ff;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .footer-text a:hover {
-            color: #5a30ff;
-        }
-    </style>
 </head>
 
 <body>
 
-    {% if request.path != "/login/" and request.path != "/registrar/" %}
-    <nav class="nav">
-        <ul>
-           <li id="menu-inicio"><a href="/">🏠 Inicio</a></li>
-            <li id="menu-madres"><a href="/madres/">🤰 Madres</a></li>
-            <li id="menu-partos"><a href="/partos/">🩺 Partos</a></li>
-            <li id="menu-rn"><a href="/rn/">🍼 Recién Nacidos</a></li>
-            <li id="menu-dashboard"><a href="/dashboard/">📊 Dashboard</a></li>
-            <li id="menu-usuarios"><a href="/usuarios/">👥 Usuarios</a></li>
-            <li id="menu-salir"><a href="/login/">🚪 Salir</a></li>
+{% if request.path != "/login/" and request.path != "/registrar/" %}
+<nav class="nav">
+    <ul>
+        <li><a href="/">🏠 Inicio</a></li>
 
-        </ul>
-    </nav>
-    {% endif %}
+        {% if request.session.rol == "matrona" or request.session.rol == "medico" or request.session.rol == "jefe_area" or request.session.rol == "admin" %}
 
-    <main class="content">
-        {% block content %}
-        {% endblock %}
-    </main>
+            <li><a href="/madres/">🤰 Madres</a></li>
+            <li><a href="/partos/">🔗 Partos</a></li>
+            <li><a href="/rn/">🍼 Recién Nacidos</a></li>
+        {% endif %}
 
-    <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const rol = sessionStorage.getItem("rol");
+        {% if request.session.rol == "jefe_area" or request.session.rol == "admin" %}
 
-    // Ocultar cosas según rol
-    if (rol === "medico") {
-        document.querySelector("#menu-madres").style.display = "none";
-        document.querySelector("#menu-partos").style.display = "none";
-    }
+            <li><a href="/dashboard/">📊 Dashboard</a></li>
+        {% endif %}
 
-    if (rol === "jefe_area") {
-        document.querySelector("#menu-madres").style.display = "none";
-        document.querySelector("#menu-partos").style.display = "none";
-        document.querySelector("#menu-rn").style.display = "none";
-    }
+        {% if request.session.rol == 'admin' %}
+            <li><a href="/usuarios/">👤 Usuarios</a></li>
+        {% endif %}
 
-    if (rol === "matrona") {
-        document.querySelector("#menu-usuarios").style.display = "none";
-    }
-});
-</script>
+        <li><a href="/login/">🚪 Salir</a></li>
+    </ul>
+</nav>
+{% endif %}
 
+<main class="content">
+    {% block content %}
+    {% endblock %}
+</main>
 
 </body>
 </html>
-

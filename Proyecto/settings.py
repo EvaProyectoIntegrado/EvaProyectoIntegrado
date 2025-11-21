@@ -114,13 +114,18 @@ USE_TZ = True
 #      ARCHIVOS ESTÁTICOS
 # ------------------------------
 
-STATIC_URL = 'static/'
+# -------------------------------------------
+# ARCHIVOS ESTÁTICOS (CSS, JS, IMÁGENES)
+# -------------------------------------------
+STATIC_URL = '/static/'
+
 STATICFILES_DIRS = [
     BASE_DIR / "Proyecto/static"
 ]
 
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 
 

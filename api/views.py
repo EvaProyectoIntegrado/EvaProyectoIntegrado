@@ -7,6 +7,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import Usuario, Madre, Parto, RecienNacido
 from .auth import requiere_rol
 from django.shortcuts import render
+from api.auth import CLAVE_SECRETA
+
 
 def pagina_inicio(request):
     return render(request, "dashboard.html")
@@ -77,14 +79,22 @@ def login(request):
         return JsonResponse({"success": False, "msg": "Usuario no existe"})
 
     if check_password(password, usuario.contraseña):
+
+        # 🔥 GUARDAR ROL EN SESIÓN
+        request.session["rol"] = usuario.rol
+        request.session["usuario_id"] = usuario.id
+
         return JsonResponse({
             "success": True,
             "msg": "Login exitoso",
             "usuario": usuario.nombre,
             "rol": usuario.rol
         })
+
     else:
         return JsonResponse({"success": False, "msg": "Contraseña incorrecta"})
+
+
 
 
 # =========================================================

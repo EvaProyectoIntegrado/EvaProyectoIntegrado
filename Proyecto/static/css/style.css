@@ -1,47 +1,92 @@
+/* Fondo pastel */
 body {
-    background: linear-gradient(180deg, #ffe0eb, #dff0ff);
-    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(to bottom, #ffe2ec, #d9ecff);
 }
 
-.form-container {
-    width: 650px;
-    margin: 40px auto;
-    padding: 40px;
+/* NAVBAR */
+.nav {
+    background-color: #ffd1df;
+    padding: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.nav ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    gap: 25px;
+}
+
+.nav a {
+    text-decoration: none;
+    color: #444;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.nav a:hover {
+    color: #ff4f87;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.content {
+    max-width: 650px;
+    margin: 50px auto;
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    padding: 40px 50px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
-.title {
+h2 {
     text-align: center;
     font-size: 32px;
-    font-weight: bold;
-    color: #555;
+    color: #444;
+    margin-bottom: 30px;
+}
+
+.emoji {
+    font-size: 40px;
+    margin-right: 10px;
+}
+
+/* Inputs */
+.form-group {
     margin-bottom: 20px;
 }
 
-.input {
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #555;
+}
+
+input, select {
     width: 100%;
     padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
     font-size: 15px;
 }
 
-.btn.primary {
+/* Botón pastel */
+.btn-primary {
     width: 100%;
     padding: 14px;
-    background-color: #ffafc9;
+    background-color: #ffb2c8;
     border: none;
-    border-radius: 10px;
-    font-size: 18px;
+    border-radius: 12px;
+    font-size: 17px;
     font-weight: bold;
     cursor: pointer;
+    transition: .2s;
 }
 
-.btn.primary:hover {
-    background-color: #ff8fb6;
-    transition: 0.3s;
+.btn-primary:hover {
+    background-color: #ff9db9;
 }
-

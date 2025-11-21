@@ -14,28 +14,47 @@
 {% if request.path != "/login/" and request.path != "/registrar/" %}
 <nav class="nav">
     <ul>
+
+        <!-- Inicio (todos los roles) -->
         <li><a href="/">🏠 Inicio</a></li>
 
-        {% if request.session.rol == "matrona" or request.session.rol == "medico" or request.session.rol == "jefe_area" or request.session.rol == "admin" %}
-
-            <li><a href="/madres/">🤰 Madres</a></li>
+        <!-- MATRÓNA -->
+        {% if request.session.rol == "matrona" %}
+            <li><a href="/madres/">🧑‍🍼 Madres</a></li>
             <li><a href="/partos/">🔗 Partos</a></li>
             <li><a href="/rn/">🍼 Recién Nacidos</a></li>
         {% endif %}
 
-        {% if request.session.rol == "jefe_area" or request.session.rol == "admin" %}
+        <!-- MÉDICO -->
+        {% if request.session.rol == "medico" %}
+            <li><a href="/partos/">📝 Ver Partos</a></li>
+            <li><a href="/rn/">🧒 Ver RN</a></li>
+        {% endif %}
 
+        <!-- JEFE DE ÁREA -->
+        {% if request.session.rol == "jefe_area" %}
             <li><a href="/dashboard/">📊 Dashboard</a></li>
+            <li><a href="/reportes/">📈 Reportes</a></li>
+            <li><a href="/madres/">🧑‍🍼 Madres</a></li>
+            <li><a href="/partos/">🔗 Partos</a></li>
         {% endif %}
 
-        {% if request.session.rol == 'admin' %}
+        <!-- ADMIN -->
+        {% if request.session.rol == "admin" %}
+            <li><a href="/dashboard/">📊 Dashboard</a></li>
             <li><a href="/usuarios/">👤 Usuarios</a></li>
+            <li><a href="/madres/">🧑‍🍼 Madres</a></li>
+            <li><a href="/partos/">🔗 Partos</a></li>
+            <li><a href="/rn/">🍼 RN</a></li>
         {% endif %}
 
+        <!-- Salir -->
         <li><a href="/login/">🚪 Salir</a></li>
+
     </ul>
 </nav>
 {% endif %}
+
 
 <main class="content">
     {% block content %}

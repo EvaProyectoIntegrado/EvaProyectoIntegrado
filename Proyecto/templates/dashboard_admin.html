@@ -156,11 +156,11 @@
         <h2>⚡ Acciones Rápidas</h2>
 
         <div class="quick-actions">
-            <a class="action-btn">👤 Usuarios</a>
-            <a class="action-btn">📂 Áreas</a>
-            <a class="action-btn">📑 Reportes</a>
-            <a class="action-btn">📦 Registros</a>
-            <a class="action-btn">🛠 Configuración</a>
+            <a href="{% url 'usuarios' %}"class="action-btn">👤 Usuarios</a>
+            <a href="{% url '' %}"class="action-btn">📂 Áreas</a>
+            <a href="{% url 'reportes' %}"class="action-btn">📑 Reportes</a>
+            <a href="{% url 'registrar' %}"class="action-btn">📦 Registros</a>
+            <a href="{% url '' %}"class="action-btn">🛠 Configuración</a>
             <a class="action-btn">🔍 Auditoría</a>
         </div>
     </div>

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Dashboard Administrador{% endblock %}
+
+{% block content %}
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, #f8f4ff 0%, #ffffff 100%);
+    margin: 0;
+    padding: 0;
+}
+
+/* Encabezado */
+.header {
+    background: #00a676;
+    color: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 0 0 20px 20px;
+}
+
+/* Tarjetas principales */
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    width: 200px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform .2s;
+    border: 2px solid rgba(0, 180, 90, 0.3);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Sección de estadísticas */
+.section {
+    background: white;
+    margin: 20px auto;
+    width: 85%;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.chart-area {
+    border: 2px dashed #00a676;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+/* Acciones rápidas */
+.actions-section {
+    margin: 20px auto;
+    width: 85%;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.action-btn {
+    background: #00a676;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    border-radius: 15px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.action-btn:hover {
+    background: #00885b;
+}
+
+</style>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador</title>
+    <link rel="stylesheet" href="{% static 'api/css/dashboard.css' %}">
+</head>
+<body>
+
+    <!-- ENCABEZADO -->
+    <div class="header">
+        <h1>Panel de Administrador</h1>
+        <p>Supervisión general del sistema hospitalario</p>
+    </div>
+
+    <!-- TARJETAS PRINCIPALES -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <span class="icon">👩‍⚕️</span>
+            <h2>{{ total_usuarios }}</h2>
+            <p>Usuarios Totales</p>
+        </div>
+
+        <div class="stat-card">
+            <span class="icon">🏥</span>
+            <h2>{{ total_areas }}</h2>
+            <p>Áreas Registradas</p>
+        </div>
+
+        <div class="stat-card">
+            <span class="icon">📊</span>
+            <h2>{{ reportes_mes }}</h2>
+            <p>Reportes del Mes</p>
+        </div>
+
+        <div class="stat-card">
+            <span class="icon">⚙️</span>
+            <h2>{{ procesos_activos }}</h2>
+            <p>Procesos Activos</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN DE ESTADÍSTICAS -->
+    <div class="section">
+        <h2>📘 Estadísticas del Sistema</h2>
+
+        <div class="chart-area">
+            <p>📈 Área de gráficas y reportes<br>
+            Datos generales de actividad del sistema</p>
+        </div>
+    </div>
+
+    <!-- ACCIONES RÁPIDAS -->
+    <div class="actions-section">
+        <h2>⚡ Acciones Rápidas</h2>
+
+        <div class="quick-actions">
+            <a class="action-btn">👤 Usuarios</a>
+            <a class="action-btn">📂 Áreas</a>
+            <a class="action-btn">📑 Reportes</a>
+            <a class="action-btn">📦 Registros</a>
+            <a class="action-btn">🛠 Configuración</a>
+            <a class="action-btn">🔍 Auditoría</a>
+        </div>
+    </div>
+
+</body>
+</html>
+{% endblock %}

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-{% block title %}🔗 Gestión de Partos{% endblock %}
+{% load static %}
+
+{% block title %}Partos - Vista Médica{% endblock %}
 
 {% block content %}
 
@@ -11,17 +13,17 @@
 
     .page-header h1 {
         font-size: 36px;
-        color: #444;
+        color: #0f172a;
         margin-bottom: 10px;
     }
 
     .page-header p {
-        color: #d46a8b;
+        color: #0ea5e9;
         font-size: 18px;
     }
 
     .table-container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 0 20px;
     }
@@ -37,37 +39,77 @@
     .table-card h2 {
         text-align: center;
         font-size: 28px;
-        color: #444;
+        color: #0f172a;
         margin-bottom: 30px;
+    }
+
+    .info-badge {
+        background: #dbeafe;
+        color: #075985;
+        padding: 12px 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 600;
     }
 
     .table-clinical {
         width: 100%;
         border-collapse: collapse;
-        min-width: 800px;
+        min-width: 900px;
     }
 
     .table-clinical thead {
-        background: #ffbfd0;
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
     }
 
     .table-clinical th {
         padding: 15px;
-        color: #333;
+        color: white;
         font-weight: bold;
         text-align: left;
     }
 
     .table-clinical td {
         padding: 15px;
-        border-bottom: 2px solid #f7d9e4;
+        border-bottom: 2px solid #e0f2fe;
         color: #333;
         vertical-align: middle;
     }
 
     .table-clinical tbody tr:hover {
-        background: #fff5f8;
+        background: #f0f9ff;
         transition: all 0.2s ease;
+    }
+
+    .badge-normal {
+        background: #d1fae5;
+        color: #065f46;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .badge-cesarea {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .badge-inducido {
+        background: #dbeafe;
+        color: #075985;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
     }
 
     .actions {
@@ -76,61 +118,23 @@
         align-items: center;
     }
 
-    .btn-edit {
-        background: #b4dcff;
+    .btn-view {
+        background: #0ea5e9;
         padding: 8px 15px;
         border-radius: 10px;
         font-weight: bold;
         font-size: 14px;
-        color: #004d80;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-    .btn-delete {
-        background: #ffb3c0;
-        padding: 8px 15px;
-        border-radius: 10px;
-        font-weight: bold;
-        font-size: 14px;
-        color: #7a0010;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-    .btn-edit:hover {
-        background: #96d1ff;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .btn-delete:hover {
-        background: #ff9aa8;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .btn-add {
-        background: linear-gradient(135deg, #ff4f87 0%, #d46a8b 100%);
         color: white;
-        padding: 12px 30px;
-        border-radius: 12px;
-        font-weight: bold;
-        font-size: 16px;
         text-decoration: none;
-        display: inline-block;
-        margin-bottom: 20px;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(255, 79, 135, 0.3);
+        display: inline-block;
+        white-space: nowrap;
     }
 
-    .btn-add:hover {
+    .btn-view:hover {
+        background: #0284c7;
         transform: translateY(-2px);
-        box-shadow: 0 7px 20px rgba(255, 79, 135, 0.4);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     .empty-state {
@@ -146,53 +150,39 @@
         margin-bottom: 15px;
     }
 
-    .table-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .table-header h2 {
-        margin: 0;
-    }
-
     /* Dark Mode */
     .dark-mode .page-header h1 {
         color: #fff;
     }
 
     .dark-mode .page-header p {
-        color: #ff9aa8;
+        color: #38bdf8;
     }
 
     .dark-mode .table-card {
-        background: #2c2836;
+        background: #1e293b;
     }
 
     .dark-mode .table-card h2 {
         color: #fff;
     }
 
-    .dark-mode .table-clinical thead {
-        background: #444;
+    .dark-mode .info-badge {
+        background: #1e40af;
+        color: #dbeafe;
     }
 
-    .dark-mode .table-clinical th {
-        color: #fff;
+    .dark-mode .table-clinical thead {
+        background: linear-gradient(135deg, #075985 0%, #0c4a6e 100%);
     }
 
     .dark-mode .table-clinical td {
         color: #eee;
-        border-bottom: 2px solid #3a3447;
+        border-bottom: 2px solid #334155;
     }
 
     .dark-mode .table-clinical tbody tr:hover {
-        background: #3a3447;
-    }
-
-    .dark-mode .empty-state {
-        color: #999;
+        background: #334155;
     }
 
     @media (max-width: 768px) {
@@ -213,18 +203,7 @@
             gap: 5px;
         }
 
-        .btn-edit, .btn-delete {
-            width: 100%;
-            text-align: center;
-        }
-
-        .table-header {
-            flex-direction: column;
-            gap: 15px;
-            align-items: stretch;
-        }
-
-        .btn-add {
+        .btn-view {
             width: 100%;
             text-align: center;
         }
@@ -233,23 +212,25 @@
 
 <div class="table-container">
     <div class="page-header">
-        <h1>🔗 Gestión de Partos</h1>
-        <p>Administra los registros de partos</p>
+        <h1>🏥 Registro de Partos</h1>
+        <p>Historial clínico de procedimientos obstétricos</p>
     </div>
 
     <div class="table-card">
-        <div class="table-header">
-            <h2>Listado de Partos</h2>
-            <a href="{% url 'registrar_parto' %}" class="btn-add">➕ Registrar Parto</a>
+        <div class="info-badge">
+            <span>ℹ️</span>
+            <span>Vista médica - Solo lectura de partos</span>
         </div>
+
+        <h2>Historial de Partos</h2>
 
         <table class="table-clinical">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Madre</th>
+                    <th>Paciente</th>
                     <th>Fecha</th>
-                    <th>Tipo</th>
+                    <th>Tipo de Parto</th>
                     <th>Observaciones</th>
                     <th>Acciones</th>
                 </tr>
@@ -260,20 +241,26 @@
                     <td><strong>{{ p.id }}</strong></td>
                     <td>{{ p.madre.nombre }}</td>
                     <td>{{ p.fecha_parto }}</td>
-                    <td>{{ p.tipo_parto }}</td>
+                    <td>
+                        {% if p.tipo_parto == "Normal" %}
+                            <span class="badge-normal">{{ p.tipo_parto }}</span>
+                        {% elif p.tipo_parto == "Cesárea" %}
+                            <span class="badge-cesarea">{{ p.tipo_parto }}</span>
+                        {% else %}
+                            <span class="badge-inducido">{{ p.tipo_parto }}</span>
+                        {% endif %}
+                    </td>
                     <td>{{ p.observaciones|default:"-" }}</td>
                     <td class="actions">
-                        <a href="{% url 'parto_editar' p.id %}" class="btn-edit">✏️ Editar</a>
-                        <a href="{% url 'parto_eliminar' p.id %}" class="btn-delete"
-                           onclick="return confirm('¿Está seguro de eliminar este parto?')">🗑️ Borrar</a>
+                        <a href="{% url 'rn' %}" class="btn-view">👶 Ver RN</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
                     <td colspan="6">
                         <div class="empty-state">
-                            <span>📋</span>
-                            <p>No hay partos registrados aún</p>
+                            <span>🏥</span>
+                            <p>No hay partos registrados</p>
                         </div>
                     </td>
                 </tr>

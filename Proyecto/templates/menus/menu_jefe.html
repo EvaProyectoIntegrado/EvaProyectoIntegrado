@@ -1,0 +1,47 @@
+<style>
+    .nav {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        padding: 15px;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .nav a {
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 18px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .nav a:hover {
+        color: #d1fae5;
+        transform: scale(1.05);
+    }
+
+    /* Dark Mode */
+    .dark-mode .nav {
+        background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+    }
+</style>
+
+<nav class="nav">
+    <ul>
+        <li><a href="/">🏠 Inicio</a></li>
+        <li><a href="#">📊 Dashboard</a></li>
+        <li><a href="#">📈 Reportes</a></li>
+        <li><a href="#">👷 Actividad del Personal</a></li>
+        <li><a href="#">📄 Informe</a></li>
+        <li><a href="/login/">🚪 Salir</a></li>
+        <li><a href="#" id="darkToggle">🌙 Dark Mode</a></li>
+    </ul>
+</nav>

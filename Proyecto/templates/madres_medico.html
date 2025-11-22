@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pacientes - Vista Médica{% endblock %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 36px;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+
+    .page-header p {
+        color: #0ea5e9;
+        font-size: 18px;
+    }
+
+    .table-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow-x: auto;
+    }
+
+    .table-card h2 {
+        text-align: center;
+        font-size: 28px;
+        color: #0f172a;
+        margin-bottom: 30px;
+    }
+
+    .info-badge {
+        background: #dbeafe;
+        color: #075985;
+        padding: 12px 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .table-clinical {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    .table-clinical thead {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    }
+
+    .table-clinical th {
+        padding: 15px;
+        color: white;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .table-clinical td {
+        padding: 15px;
+        border-bottom: 2px solid #e0f2fe;
+        color: #333;
+        vertical-align: middle;
+    }
+
+    .table-clinical tbody tr:hover {
+        background: #f0f9ff;
+        transition: all 0.2s ease;
+    }
+
+    .badge-info {
+        background: #dbeafe;
+        color: #075985;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+        font-size: 16px;
+    }
+
+    .empty-state span {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    /* Dark Mode */
+    .dark-mode .page-header h1 {
+        color: #fff;
+    }
+
+    .dark-mode .page-header p {
+        color: #38bdf8;
+    }
+
+    .dark-mode .table-card {
+        background: #1e293b;
+    }
+
+    .dark-mode .table-card h2 {
+        color: #fff;
+    }
+
+    .dark-mode .info-badge {
+        background: #1e40af;
+        color: #dbeafe;
+    }
+
+    .dark-mode .table-clinical thead {
+        background: linear-gradient(135deg, #075985 0%, #0c4a6e 100%);
+    }
+
+    .dark-mode .table-clinical td {
+        color: #eee;
+        border-bottom: 2px solid #334155;
+    }
+
+    .dark-mode .table-clinical tbody tr:hover {
+        background: #334155;
+    }
+
+    .dark-mode .badge-info {
+        background: #1e40af;
+        color: #bfdbfe;
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 28px;
+        }
+
+        .table-card {
+            padding: 25px 15px;
+        }
+
+        .table-card h2 {
+            font-size: 22px;
+        }
+    }
+</style>
+
+<div class="table-container">
+    <div class="page-header">
+        <h1>👥 Base de Pacientes</h1>
+        <p>Información médica de pacientes registradas</p>
+    </div>
+
+    <div class="table-card">
+        <div class="info-badge">
+            <span>ℹ️</span>
+            <span>Vista de solo lectura - Rol Médico</span>
+        </div>
+
+        <h2>Registro de Pacientes</h2>
+
+        <table class="table-clinical">
+            <thead>
+                <tr>
+                    <th>RUT</th>
+                    <th>Nombre Completo</th>
+                    <th>Edad</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in madres %}
+                <tr>
+                    <td><strong>{{ m.rut }}</strong></td>
+                    <td>{{ m.nombre }}</td>
+                    <td>{{ m.edad }} años</td>
+                    <td>{{ m.direccion }}</td>
+                    <td><span class="badge-info">Activa</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <span>👥</span>
+                            <p>No hay pacientes registradas</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

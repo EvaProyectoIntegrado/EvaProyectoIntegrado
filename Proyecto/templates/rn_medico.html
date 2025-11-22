@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}🍼 Gestión de Recién Nacidos{% endblock %}
+{% block title %}🍼 Área Neonatal{% endblock %}
 
 {% block content %}
 
@@ -13,12 +13,12 @@
 
     .page-header h1 {
         font-size: 24px;
-        color: #444;
+        color: #0f172a;
         margin-bottom: 3px;
     }
 
     .page-header p {
-        color: #d46a8b;
+        color: #0ea5e9;
         font-size: 14px;
         margin: 0;
     }
@@ -42,11 +42,12 @@
         padding: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         height: fit-content;
+        border-top: 4px solid #0ea5e9;
     }
 
     .form-card h2 {
         font-size: 18px;
-        color: #444;
+        color: #0f172a;
         text-align: center;
         margin-bottom: 15px;
     }
@@ -58,7 +59,7 @@
     .form-group label {
         display: block;
         font-weight: 600;
-        color: #444;
+        color: #0f172a;
         margin-bottom: 5px;
         font-size: 13px;
     }
@@ -69,7 +70,7 @@
         padding: 8px 12px;
         font-size: 13px;
         font-family: "Poppins", sans-serif;
-        border: 2px solid #ffbfd0;
+        border: 2px solid #bfdbfe;
         border-radius: 10px;
         transition: all 0.3s ease;
         background-color: #fff;
@@ -80,13 +81,13 @@
     .form-group input:focus,
     .form-group select:focus {
         outline: none;
-        border-color: #ff4f87;
-        box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.1);
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
     }
 
     .form-group input:hover,
     .form-group select:hover {
-        border-color: #ffa8c5;
+        border-color: #60a5fa;
     }
 
     .btn-submit {
@@ -96,28 +97,41 @@
         font-weight: bold;
         font-family: "Poppins", sans-serif;
         color: white;
-        background: linear-gradient(135deg, #ff4f87 0%, #d46a8b 100%);
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
         border: none;
         border-radius: 10px;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(255, 79, 135, 0.3);
+        box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
         margin-top: 5px;
     }
 
     .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 7px 20px rgba(255, 79, 135, 0.4);
+        box-shadow: 0 7px 20px rgba(14, 165, 233, 0.4);
     }
 
     .alert-error {
-        background: #ffe2e2;
+        background: #fee2e2;
         padding: 8px 10px;
         border-radius: 8px;
-        color: #b60000;
+        color: #b91c1c;
         margin-bottom: 12px;
-        border-left: 4px solid red;
+        border-left: 4px solid #dc2626;
         font-size: 12px;
+    }
+
+    .info-badge {
+        background: #dbeafe;
+        color: #075985;
+        padding: 8px 14px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 600;
     }
 
     /* TABLA */
@@ -126,12 +140,13 @@
         border-radius: 18px;
         padding: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-top: 4px solid #0ea5e9;
     }
 
     .table-card h2 {
         text-align: center;
         font-size: 18px;
-        color: #444;
+        color: #0f172a;
         margin-bottom: 15px;
     }
 
@@ -147,7 +162,7 @@
     }
 
     .table-clinical thead {
-        background: #ffbfd0;
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
         position: sticky;
         top: 0;
         z-index: 10;
@@ -155,7 +170,7 @@
 
     .table-clinical th {
         padding: 10px;
-        color: #333;
+        color: white;
         font-weight: bold;
         text-align: left;
         font-size: 13px;
@@ -163,14 +178,14 @@
 
     .table-clinical td {
         padding: 10px;
-        border-bottom: 2px solid #f7d9e4;
+        border-bottom: 2px solid #e0f2fe;
         color: #333;
         vertical-align: middle;
         font-size: 13px;
     }
 
     .table-clinical tbody tr:hover {
-        background: #fff5f8;
+        background: #f0f9ff;
         transition: all 0.2s ease;
     }
 
@@ -181,12 +196,12 @@
     }
 
     .btn-edit {
-        background: #b4dcff;
+        background: #0ea5e9;
         padding: 6px 12px;
         border-radius: 8px;
         font-weight: bold;
         font-size: 13px;
-        color: #004d80;
+        color: white;
         text-decoration: none;
         transition: all 0.3s ease;
         display: inline-block;
@@ -194,12 +209,12 @@
     }
 
     .btn-delete {
-        background: #ffb3c0;
+        background: #ef4444;
         padding: 6px 12px;
         border-radius: 8px;
         font-weight: bold;
         font-size: 13px;
-        color: #7a0010;
+        color: white;
         text-decoration: none;
         transition: all 0.3s ease;
         display: inline-block;
@@ -207,13 +222,13 @@
     }
 
     .btn-edit:hover {
-        background: #96d1ff;
+        background: #0284c7;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     .btn-delete:hover {
-        background: #ff9aa8;
+        background: #dc2626;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
@@ -237,12 +252,13 @@
     }
 
     .dark-mode .page-header p {
-        color: #ff9aa8;
+        color: #38bdf8;
     }
 
     .dark-mode .form-card,
     .dark-mode .table-card {
-        background: #2c2836;
+        background: #1e293b;
+        border-top-color: #0ea5e9;
     }
 
     .dark-mode .form-card h2,
@@ -256,36 +272,33 @@
 
     .dark-mode .form-group input,
     .dark-mode .form-group select {
-        background: #3a3447;
-        border-color: #4a4058;
+        background: #334155;
+        border-color: #475569;
         color: #eee;
     }
 
     .dark-mode .form-group input:focus,
     .dark-mode .form-group select:focus {
-        border-color: #ff4f87;
-        background: #423952;
+        border-color: #0ea5e9;
+        background: #3a4556;
     }
 
     .dark-mode .table-clinical thead {
-        background: #444;
-    }
-
-    .dark-mode .table-clinical th {
-        color: #fff;
+        background: linear-gradient(135deg, #075985 0%, #0c4a6e 100%);
     }
 
     .dark-mode .table-clinical td {
         color: #eee;
-        border-bottom: 2px solid #3a3447;
+        border-bottom: 2px solid #334155;
     }
 
     .dark-mode .table-clinical tbody tr:hover {
-        background: #3a3447;
+        background: #334155;
     }
 
-    .dark-mode .empty-state {
-        color: #999;
+    .dark-mode .info-badge {
+        background: #1e40af;
+        color: #dbeafe;
     }
 
     @media (max-width: 1024px) {
@@ -322,13 +335,18 @@
 
 <div class="content-wrapper">
     <div class="page-header">
-        <h1>🍼 Gestión de Recién Nacidos</h1>
-        <p>Registra y administra los datos de los RN</p>
+        <h1>👶 Área Neonatal - Control Médico</h1>
+        <p>Registro y seguimiento de recién nacidos</p>
     </div>
 
     <div class="cards-container">
         <!-- FORMULARIO -->
         <div class="form-card">
+            <div class="info-badge">
+                <span>⚕️</span>
+                <span>Registro Neonatal Médico</span>
+            </div>
+
             <h2>Registrar RN</h2>
 
             {% if error %}
@@ -380,7 +398,7 @@
 
         <!-- TABLA -->
         <div class="table-card">
-            <h2>📄 RN Registrados</h2>
+            <h2>📄 Neonatos Registrados</h2>
 
             <div class="table-wrapper">
                 <table class="table-clinical">
@@ -408,8 +426,6 @@
                             <td>{{ r.apgar }}</td>
                             <td class="actions">
                                 <a href="{% url 'rn_editar' r.id %}" class="btn-edit">✏️ Editar</a>
-                                <a href="{% url 'rn_eliminar' r.id %}" class="btn-delete"
-                                   onclick="return confirm('¿Está seguro de eliminar este RN?')">🗑️ Eliminar</a>
                             </td>
                         </tr>
                         {% empty %}

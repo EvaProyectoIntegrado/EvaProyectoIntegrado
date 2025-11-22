@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard Jefe de Área{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 35px;
+        padding: 35px 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        color: white;
+    }
+
+    .welcome-section h1 {
+        font-size: 34px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .welcome-section p {
+        font-size: 17px;
+        opacity: 0.95;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+        margin-bottom: 35px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        text-align: center;
+        border-left: 5px solid transparent;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-card.green {
+        border-left-color: #10b981;
+    }
+
+    .stat-card.emerald {
+        border-left-color: #059669;
+    }
+
+    .stat-card.teal {
+        border-left-color: #14b8a6;
+    }
+
+    .stat-card.lime {
+        border-left-color: #84cc16;
+    }
+
+    .stat-icon {
+        font-size: 44px;
+        margin-bottom: 12px;
+    }
+
+    .stat-number {
+        font-size: 40px;
+        font-weight: bold;
+        color: #0f172a;
+        margin: 8px 0;
+    }
+
+    .stat-label {
+        font-size: 15px;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 20px;
+        margin-bottom: 35px;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+        font-size: 22px;
+        color: #0f172a;
+        margin-bottom: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chart-placeholder {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px dashed #10b981;
+        border-radius: 12px;
+        padding: 60px 20px;
+        text-align: center;
+        color: #059669;
+        font-weight: 600;
+    }
+
+    .activities-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border-left: 4px solid #10b981;
+        transition: all 0.2s ease;
+    }
+
+    .activity-item:hover {
+        background: #f0fdf4;
+        transform: translateX(5px);
+    }
+
+    .activity-icon {
+        font-size: 28px;
+        min-width: 35px;
+    }
+
+    .activity-info {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .activity-time {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .action-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 18px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+    }
+
+    .action-btn .icon {
+        font-size: 24px;
+    }
+
+    .language-selector {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: white;
+        border-radius: 12px;
+        padding: 10px 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 1000;
+    }
+
+    .language-selector select {
+        border: 2px solid #10b981;
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-family: "Poppins", sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    /* Dark Mode */
+    .dark-mode .welcome-section {
+        background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+    }
+
+    .dark-mode .stat-card,
+    .dark-mode .section-card,
+    .dark-mode .language-selector {
+        background: #1e293b;
+    }
+
+    .dark-mode .stat-number,
+    .dark-mode .stat-label,
+    .dark-mode .section-title,
+    .dark-mode .activity-title {
+        color: #f1f5f9;
+    }
+
+    .dark-mode .activity-item {
+        background: #334155;
+    }
+
+    .dark-mode .activity-item:hover {
+        background: #3a4556;
+    }
+
+    .dark-mode .activity-time {
+        color: #94a3b8;
+    }
+
+    .dark-mode .chart-placeholder {
+        background: #334155;
+        border-color: #10b981;
+        color: #d1fae5;
+    }
+
+    @media (max-width: 1024px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .welcome-section h1 {
+            font-size: 26px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .language-selector {
+            top: 70px;
+            right: 10px;
+        }
+    }
+</style>
+
+<!-- Selector de Idioma -->
+<div class="language-selector">
+    <span>🌍</span>
+    <select id="languageSelector" onchange="changeLanguage(this.value)">
+        <option value="es" selected>Español</option>
+        <option value="en">English</option>
+        <option value="pt">Português</option>
+        <option value="fr">Français</option>
+    </select>
+</div>
+
+<div class="dashboard-container">
+    <!-- Sección de Bienvenida -->
+    <div class="welcome-section">
+        <h1>
+            <span>📊</span>
+            <span data-translate="welcome">Panel de Jefe de Área</span>
+        </h1>
+        <p data-translate="subtitle">Gestión y supervisión del área obstétrica</p>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card green">
+            <div class="stat-icon">🤰</div>
+            <div class="stat-number">{{ total_madres }}</div>
+            <div class="stat-label" data-translate="mothers">Madres Totales</div>
+        </div>
+
+        <div class="stat-card emerald">
+            <div class="stat-icon">🏥</div>
+            <div class="stat-number">{{ total_partos }}</div>
+            <div class="stat-label" data-translate="births">Partos Registrados</div>
+        </div>
+
+        <div class="stat-card teal">
+            <div class="stat-icon">👶</div>
+            <div class="stat-number">{{ total_rn }}</div>
+            <div class="stat-label" data-translate="newborns">Recién Nacidos</div>
+        </div>
+
+        <div class="stat-card lime">
+            <div class="stat-icon">📈</div>
+            <div class="stat-number">{{ partos_mes }}</div>
+            <div class="stat-label" data-translate="thisMonth">Este Mes</div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="content-grid">
+        <!-- Gráficas -->
+        <div class="section-card">
+            <h2 class="section-title">
+                <span>📊</span>
+                <span data-translate="statistics">Estadísticas del Área</span>
+            </h2>
+
+            <div class="chart-placeholder">
+                📈 Área de gráficas y reportes<br>
+                <small>Datos estadísticos del área obstétrica</small>
+            </div>
+        </div>
+
+        <!-- Panel de Control -->
+        <div class="section-card">
+            <h2 class="section-title">
+                <span>⚡</span>
+                <span data-translate="quickActions">Acciones Rápidas</span>
+            </h2>
+
+            <div class="quick-actions">
+                <a href="{% url 'madres' %}" class="action-btn">
+                    <span class="icon">👩</span>
+                    <span data-translate="mothers">Madres</span>
+                </a>
+
+                <a href="{% url 'partos' %}" class="action-btn">
+                    <span class="icon">🔗</span>
+                    <span data-translate="births">Partos</span>
+                </a>
+
+                <a href="{% url 'rn' %}" class="action-btn">
+                    <span class="icon">👶</span>
+                    <span data-translate="rn">RN</span>
+                </a>
+
+                <a href="{% url 'reportes' %}" class="action-btn">
+                    <span class="icon">📊</span>
+                    <span data-translate="reports">Reportes</span>
+                </a>
+
+                <a href="{% url 'personal' %}" class="action-btn">
+                    <span class="icon">👥</span>
+                    <span data-translate="staff">Personal</span>
+                </a>
+
+                <a href="{% url 'analisis' %}" class="action-btn">
+                    <span class="icon">📈</span>
+                    <span data-translate="analytics">Análisis</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actividad Reciente -->
+    <div class="section-card">
+        <h2 class="section-title">
+            <span>🕐</span>
+            <span data-translate="recentActivity">Actividad Reciente del Área</span>
+        </h2>
+
+        <div class="activities-list">
+            <div class="activity-item">
+                <div class="activity-icon">✅</div>
+                <div class="activity-info">
+                    <div class="activity-title" data-translate="activity1">Nuevo registro de madre aprobado</div>
+                    <div class="activity-time">Hace 1 hora</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">🏥</div>
+                <div class="activity-info">
+                    <div class="activity-title" data-translate="activity2">Parto registrado por matrona</div>
+                    <div class="activity-time">Hace 3 horas</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">👶</div>
+                <div class="activity-info">
+                    <div class="activity-title" data-translate="activity3">RN registrado por médico</div>
+                    <div class="activity-time">Hace 5 horas</div>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-icon">📋</div>
+                <div class="activity-info">
+                    <div class="activity-title" data-translate="activity4">Reporte REM22 generado</div>
+                    <div class="activity-time">Hace 1 día</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const translations = {
+        es: {
+            welcome: "Panel de Jefe de Área",
+            subtitle: "Gestión y supervisión del área obstétrica",
+            mothers: "Madres Totales",
+            births: "Partos Registrados",
+            newborns: "Recién Nacidos",
+            thisMonth: "Este Mes",
+            statistics: "Estadísticas del Área",
+            quickActions: "Acciones Rápidas",
+            reports: "Reportes",
+            staff: "Personal",
+            analytics: "Análisis",
+            rn: "RN",
+            recentActivity: "Actividad Reciente del Área",
+            activity1: "Nuevo registro de madre aprobado",
+            activity2: "Parto registrado por matrona",
+            activity3: "RN registrado por médico",
+            activity4: "Reporte REM22 generado"
+        },
+        en: {
+            welcome: "Area Manager Dashboard",
+            subtitle: "Obstetric area management and supervision",
+            mothers: "Total Mothers",
+            births: "Registered Births",
+            newborns: "Newborns",
+            thisMonth: "This Month",
+            statistics: "Area Statistics",
+            quickActions: "Quick Actions",
+            reports: "Reports",
+            staff: "Staff",
+            analytics: "Analytics",
+            rn: "Newborns",
+            recentActivity: "Recent Area Activity",
+            activity1: "New mother record approved",
+            activity2: "Birth registered by midwife",
+            activity3: "Newborn registered by doctor",
+            activity4: "REM22 report generated"
+        },
+        pt: {
+            welcome: "Painel do Chefe de Área",
+            subtitle: "Gestão e supervisão da área obstétrica",
+            mothers: "Total de Mães",
+            births: "Partos Registrados",
+            newborns: "Recém-nascidos",
+            thisMonth: "Este Mês",
+            statistics: "Estatísticas da Área",
+            quickActions: "Ações Rápidas",
+            reports: "Relatórios",
+            staff: "Pessoal",
+            analytics: "Análise",
+            rn: "RN",
+            recentActivity: "Atividade Recente da Área",
+            activity1: "Novo registro de mãe aprovado",
+            activity2: "Parto registrado por parteira",
+            activity3: "RN registrado por médico",
+            activity4: "Relatório REM22 gerado"
+        },
+        fr: {
+            welcome: "Panneau du Chef de Zone",
+            subtitle: "Gestion et supervision de la zone obstétrique",
+            mothers: "Total des Mères",
+            births: "Accouchements Enregistrés",
+            newborns: "Nouveau-nés",
+            thisMonth: "Ce Mois",
+            statistics: "Statistiques de Zone",
+            quickActions: "Actions Rapides",
+            reports: "Rapports",
+            staff: "Personnel",
+            analytics: "Analytique",
+            rn: "Nouveau-nés",
+            recentActivity: "Activité Récente de la Zone",
+            activity1: "Nouveau dossier de mère approuvé",
+            activity2: "Accouchement enregistré par sage-femme",
+            activity3: "Nouveau-né enregistré par médecin",
+            activity4: "Rapport REM22 généré"
+        }
+    };
+
+    function changeLanguage(lang) {
+        const elements = document.querySelectorAll('[data-translate]');
+        elements.forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (translations[lang] && translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
+        });
+        localStorage.setItem('language', lang);
+    }
+
+    window.addEventListener('load', () => {
+        const savedLang = localStorage.getItem('language') || 'es';
+        document.getElementById('languageSelector').value = savedLang;
+        if (savedLang !== 'es') {
+            changeLanguage(savedLang);
+        }
+    });
+</script>
+
+{% endblock %}

@@ -58,6 +58,7 @@ class RecienNacido(models.Model):
     peso = models.FloatField()
     talla = models.FloatField()
     apgar = models.IntegerField()
+    sexo = models.CharField(max_length=10, choices=[('Masculino', 'Masculino'), ('Femenino', 'Femenino')], default='Masculino')  # ← AGREGAR ESTA LÍNEA
 
     def __str__(self):
         return f"RN del parto {self.parto.id}"

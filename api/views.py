@@ -4,7 +4,7 @@ import json
 from .models import Usuario
 from django.contrib.auth.hashers import make_password, check_password
 
-from .models import Usuario, Madre, Parto, RecienNacido
+from api.models import Madre, Parto, RecienNacido
 from .auth import requiere_rol
 from django.shortcuts import render
 from api.auth import CLAVE_SECRETA

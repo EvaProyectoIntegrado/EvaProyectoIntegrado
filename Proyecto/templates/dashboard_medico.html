@@ -1,0 +1,510 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard Médico - Sistema Perinatal{% endblock %}
+
+{% block content %}
+
+<style>
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 35px;
+        padding: 35px 20px;
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+        color: white;
+    }
+
+    .welcome-section h1 {
+        font-size: 34px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .welcome-section p {
+        font-size: 17px;
+        opacity: 0.95;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+        margin-bottom: 35px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        text-align: center;
+        border-left: 5px solid transparent;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+    }
+
+    .stat-card.blue {
+        border-left-color: #0ea5e9;
+    }
+
+    .stat-card.green {
+        border-left-color: #10b981;
+    }
+
+    .stat-card.teal {
+        border-left-color: #14b8a6;
+    }
+
+    .stat-card.cyan {
+        border-left-color: #06b6d4;
+    }
+
+    .stat-icon {
+        font-size: 44px;
+        margin-bottom: 12px;
+    }
+
+    .stat-number {
+        font-size: 40px;
+        font-weight: bold;
+        color: #0f172a;
+        margin: 8px 0;
+    }
+
+    .stat-label {
+        font-size: 15px;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 35px;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+        font-size: 22px;
+        color: #0f172a;
+        margin-bottom: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .clinical-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .clinical-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border-left: 4px solid #0ea5e9;
+        transition: all 0.2s ease;
+    }
+
+    .clinical-item:hover {
+        background: #e0f2fe;
+        transform: translateX(5px);
+    }
+
+    .clinical-info {
+        flex: 1;
+    }
+
+    .clinical-name {
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .clinical-detail {
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    .clinical-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .badge-normal {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .badge-cesarea {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        gap: 12px;
+    }
+
+    .action-btn {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 18px 20px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 15px;
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(14, 165, 233, 0.4);
+    }
+
+    .action-btn .icon {
+        font-size: 26px;
+    }
+
+    .alerts-section {
+        background: #fef3c7;
+        border-left: 5px solid #f59e0b;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .alert-title {
+        font-weight: 700;
+        color: #92400e;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .alert-text {
+        color: #78350f;
+        font-size: 14px;
+    }
+
+    .language-selector {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: white;
+        border-radius: 12px;
+        padding: 10px 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 1000;
+    }
+
+    .language-selector select {
+        border: 2px solid #0ea5e9;
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-family: "Poppins", sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    /* Dark Mode */
+    .dark-mode .welcome-section {
+        background: linear-gradient(135deg, #075985 0%, #0c4a6e 100%);
+    }
+
+    .dark-mode .stat-card,
+    .dark-mode .section-card,
+    .dark-mode .language-selector {
+        background: #1e293b;
+    }
+
+    .dark-mode .stat-number,
+    .dark-mode .stat-label,
+    .dark-mode .section-title,
+    .dark-mode .clinical-name {
+        color: #f1f5f9;
+    }
+
+    .dark-mode .clinical-item {
+        background: #334155;
+    }
+
+    .dark-mode .clinical-item:hover {
+        background: #475569;
+    }
+
+    .dark-mode .clinical-detail {
+        color: #94a3b8;
+    }
+
+    @media (max-width: 1024px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .welcome-section h1 {
+            font-size: 26px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .language-selector {
+            top: 70px;
+            right: 10px;
+        }
+    }
+</style>
+
+<!-- Selector de Idioma -->
+<div class="language-selector">
+    <span>🌍</span>
+    <select id="languageSelector" onchange="changeLanguage(this.value)">
+        <option value="es" selected>Español</option>
+        <option value="en">English</option>
+        <option value="pt">Português</option>
+        <option value="fr">Français</option>
+    </select>
+</div>
+
+<div class="dashboard-container">
+    <!-- Sección de Bienvenida -->
+    <div class="welcome-section">
+        <h1>
+            <span>⚕️</span>
+            <span data-translate="welcome">Panel Médico - Control Clínico</span>
+        </h1>
+        <p data-translate="subtitle">Sistema integral de gestión perinatal</p>
+    </div>
+
+    <!-- Alertas Médicas -->
+    <div class="alerts-section">
+        <div class="alert-title">
+            <span>⚠️</span>
+            <span data-translate="alertTitle">Atención Médica Requerida</span>
+        </div>
+        <p class="alert-text" data-translate="alertText">2 pacientes requieren seguimiento prioritario esta semana</p>
+    </div>
+
+    <!-- Estadísticas Clínicas -->
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <div class="stat-icon">🤰</div>
+            <div class="stat-number">{{ total_madres }}</div>
+            <div class="stat-label" data-translate="patients">Pacientes Activas</div>
+        </div>
+
+        <div class="stat-card green">
+            <div class="stat-icon">🏥</div>
+            <div class="stat-number">{{ total_partos }}</div>
+            <div class="stat-label" data-translate="births">Partos Atendidos</div>
+        </div>
+
+        <div class="stat-card teal">
+            <div class="stat-icon">👶</div>
+            <div class="stat-number">{{ total_rn }}</div>
+            <div class="stat-label" data-translate="newborns">Neonatos</div>
+        </div>
+
+        <div class="stat-card cyan">
+            <div class="stat-icon">📊</div>
+            <div class="stat-number">{{ partos_mes }}</div>
+            <div class="stat-label" data-translate="thisMonth">Este Mes</div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="content-grid">
+        <!-- Historial Clínico Reciente -->
+        <div class="section-card">
+            <h2 class="section-title">
+                <span>📋</span>
+                <span data-translate="recentCases">Casos Recientes</span>
+            </h2>
+            
+            <div class="clinical-list">
+                <div class="clinical-item">
+                    <div class="clinical-info">
+                        <div class="clinical-name">María García</div>
+                        <div class="clinical-detail">11/11/2025 - Parto Normal</div>
+                    </div>
+                    <span class="clinical-badge badge-normal">Normal</span>
+                </div>
+
+                <div class="clinical-item">
+                    <div class="clinical-info">
+                        <div class="clinical-name">Ana Martínez</div>
+                        <div class="clinical-detail">10/11/2025 - Cesárea</div>
+                    </div>
+                    <span class="clinical-badge badge-cesarea">Cesárea</span>
+                </div>
+
+                <div class="clinical-item">
+                    <div class="clinical-info">
+                        <div class="clinical-name">Carmen López</div>
+                        <div class="clinical-detail">09/11/2025 - Parto Normal</div>
+                    </div>
+                    <span class="clinical-badge badge-normal">Normal</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="section-card">
+            <h2 class="section-title">
+                <span>⚡</span>
+                <span data-translate="quickActions">Acciones Rápidas</span>
+            </h2>
+            
+            <div class="quick-actions-grid">
+                <a href="{% url 'registrar_parto' %}" class="action-btn">
+                    <span class="icon">🩺</span>
+                    <span data-translate="registerBirth">Registrar Parto</span>
+                </a>
+
+                <a href="{% url 'partos' %}" class="action-btn">
+                    <span class="icon">📊</span>
+                    <span data-translate="viewCases">Ver Casos</span>
+                </a>
+
+                <a href="{% url 'madres' %}" class="action-btn">
+                    <span class="icon">👥</span>
+                    <span data-translate="patients">Pacientes</span>
+                </a>
+
+                <a href="{% url 'rn' %}" class="action-btn">
+                    <span class="icon">👼</span>
+                    <span data-translate="neonatal">Área Neonatal</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sistema de traducción
+const translations = {
+    es: {
+        welcome: "Panel Médico - Control Clínico",
+        subtitle: "Sistema integral de gestión perinatal",
+        alertTitle: "Atención Médica Requerida",
+        alertText: "2 pacientes requieren seguimiento prioritario esta semana",
+        patients: "Pacientes Activas",
+        births: "Partos Atendidos",
+        newborns: "Neonatos",
+        thisMonth: "Este Mes",
+        recentCases: "Casos Recientes",
+        quickActions: "Acciones Rápidas",
+        registerBirth: "Registrar Parto",
+        viewCases: "Ver Casos",
+        neonatal: "Área Neonatal"
+    },
+    en: {
+        welcome: "Medical Panel - Clinical Control",
+        subtitle: "Comprehensive perinatal management system",
+        alertTitle: "Medical Attention Required",
+        alertText: "2 patients require priority follow-up this week",
+        patients: "Active Patients",
+        births: "Births Attended",
+        newborns: "Neonates",
+        thisMonth: "This Month",
+        recentCases: "Recent Cases",
+        quickActions: "Quick Actions",
+        registerBirth: "Register Birth",
+        viewCases: "View Cases",
+        neonatal: "Neonatal Area"
+    },
+    pt: {
+        welcome: "Painel Médico - Controle Clínico",
+        subtitle: "Sistema integral de gestão perinatal",
+        alertTitle: "Atenção Médica Necessária",
+        alertText: "2 pacientes requerem acompanhamento prioritário esta semana",
+        patients: "Pacientes Ativas",
+        births: "Partos Atendidos",
+        newborns: "Neonatos",
+        thisMonth: "Este Mês",
+        recentCases: "Casos Recentes",
+        quickActions: "Ações Rápidas",
+        registerBirth: "Registrar Parto",
+        viewCases: "Ver Casos",
+        neonatal: "Área Neonatal"
+    },
+    fr: {
+        welcome: "Panneau Médical - Contrôle Clinique",
+        subtitle: "Système intégral de gestion périnatale",
+        alertTitle: "Attention Médicale Requise",
+        alertText: "2 patients nécessitent un suivi prioritaire cette semaine",
+        patients: "Patients Actifs",
+        births: "Accouchements Assistés",
+        newborns: "Nouveau-nés",
+        thisMonth: "Ce Mois",
+        recentCases: "Cas Récents",
+        quickActions: "Actions Rapides",
+        registerBirth: "Enregistrer Accouchement",
+        viewCases: "Voir Cas",
+        neonatal: "Zone Néonatale"
+    }
+};
+
+function changeLanguage(lang) {
+    const elements = document.querySelectorAll('[data-translate]');
+    elements.forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (translations[lang] && translations[lang][key]) {
+            element.textContent = translations[lang][key];
+        }
+    });
+    localStorage.setItem('language', lang);
+}
+
+window.addEventListener('load', () => {
+    const savedLang = localStorage.getItem('language') || 'es';
+    document.getElementById('languageSelector').value = savedLang;
+    if (savedLang !== 'es') {
+        changeLanguage(savedLang);
+    }
+});
+</script>
+
+{% endblock %}

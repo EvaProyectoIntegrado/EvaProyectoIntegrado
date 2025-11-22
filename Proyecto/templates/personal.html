@@ -1,0 +1,341 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Personal - Sistema Maternidad</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <style>
+        body {
+            background-color: #F3F4F6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .navbar-custom {
+            background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mini-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid;
+        }
+
+        .mini-card.total { border-color: #3B82F6; }
+        .mini-card.matronas { border-color: #10B981; }
+        .mini-card.medicos { border-color: #8B5CF6; }
+        .mini-card.jefes { border-color: #F59E0B; }
+
+        .mini-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .mini-card.total .mini-card-value { color: #3B82F6; }
+        .mini-card.matronas .mini-card-value { color: #10B981; }
+        .mini-card.medicos .mini-card-value { color: #8B5CF6; }
+        .mini-card.jefes .mini-card-value { color: #F59E0B; }
+
+        .mini-card-label {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .badge-rol {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-matrona {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-medico {
+            background: #DDD6FE;
+            color: #5B21B6;
+        }
+
+        .badge-jefe {
+            background: #FED7AA;
+            color: #92400E;
+        }
+
+        .badge-admin {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .btn-edit:hover {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .btn-delete:hover {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back {
+            background: white;
+            color: #374151;
+            border: 2px solid #E5E7EB;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom navbar-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="bi bi-hospital-fill"></i> Sistema Maternidad
+            </span>
+            <span class="text-white">
+                <i class="bi bi-person-circle"></i> Jefe de Área
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid p-4">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="page-title">
+                    <i class="bi bi-people-fill"></i>
+                    Gestión de Personal
+                </h1>
+                <div class="d-flex gap-2">
+                    <button class="btn-add" data-bs-toggle="modal" data-bs-target="#modalAgregarPersonal">
+                        <i class="bi bi-plus-circle"></i>
+                        Agregar Personal
+                    </button>
+                    <a href="/dashboard/" class="btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="mini-card total">
+                <div class="mini-card-value">{{ total_personal }}</div>
+                <div class="mini-card-label">Total Personal</div>
+            </div>
+            <div class="mini-card matronas">
+                <div class="mini-card-value">{{ total_matronas }}</div>
+                <div class="mini-card-label">Matronas</div>
+            </div>
+            <div class="mini-card medicos">
+                <div class="mini-card-value">{{ total_medicos }}</div>
+                <div class="mini-card-label">Médicos</div>
+            </div>
+            <div class="mini-card jefes">
+                <div class="mini-card-value">{{ total_jefes }}</div>
+                <div class="mini-card-label">Jefes de Área</div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table id="tablaPersonal" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>RUT</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for persona in personal %}
+                    <tr>
+                        <td>{{ persona.rut }}</td>
+                        <td>{{ persona.nombre }}</td>
+                        <td>{{ persona.email }}</td>
+                        <td>
+                            {% if persona.rol == "matrona" %}
+                                <span class="badge-rol badge-matrona">Matrona</span>
+                            {% elif persona.rol == "medico" %}
+                                <span class="badge-rol badge-medico">Médico</span>
+                            {% elif persona.rol == "jefe_area" %}
+                                <span class="badge-rol badge-jefe">Jefe de Área</span>
+                            {% elif persona.rol == "admin" %}
+                                <span class="badge-rol badge-admin">Administrador</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="editarPersonal({{ persona.id }})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn-action btn-delete" onclick="confirmarEliminar({{ persona.id }}, '{{ persona.nombre }}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No hay personal registrado</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Personal -->
+    <div class="modal fade" id="modalAgregarPersonal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Nuevo Personal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/personal/crear/">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">RUT</label>
+                            <input type="text" class="form-control" name="rut" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rol</label>
+                            <select class="form-select" name="rol" required>
+                                <option value="matrona">Matrona</option>
+                                <option value="medico">Médico</option>
+                                <option value="jefe_area">Jefe de Área</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#tablaPersonal').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                },
+                pageLength: 10
+            });
+        });
+
+        function editarPersonal(id) {
+            window.location.href = `/personal/editar/${id}/`;
+        }
+
+        function confirmarEliminar(id, nombre) {
+            if (confirm(`¿Está seguro de eliminar a ${nombre}?`)) {
+                window.location.href = `/personal/eliminar/${id}/`;
+            }
+        }
+    </script>
+</body>
+</html>

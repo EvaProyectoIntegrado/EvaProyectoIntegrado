@@ -4,20 +4,49 @@ from usuarios import views as web
 from api import views as api
 
 urlpatterns = [
-    # FRONTEND (HTML)
-    path("", web.dashboard, name="dashboard"),         # dashboard visible en "/"
-    path("dashboard/", web.dashboard, name="dashboard_page"),  # dashboard visible en "/dashboard/"
+    # FRONTEND
+    path("", web.dashboard, name="dashboard"),
+    path("dashboard/", web.dashboard, name="dashboard_page"),
 
     path("login/", web.login_view, name="login"),
     path("registrar/", web.register_view, name="registrar"),
 
-    # Módulos HTML
-    path("madres/", web.madres_view, name="madres"),
-    path("partos/", web.partos_view, name="partos"),
+    # -----------------------
+    # CRUD MADRES
+    # -----------------------
+    path("madres/", web.madres_list, name="madres"),
+    path("madres/registrar/", web.registrar_madre, name="registrar_madre"),
+    path("madres/editar/<int:id>/", web.madre_editar, name="madre_editar"),
+    path("madres/eliminar/<int:id>/", web.madre_eliminar, name="madre_eliminar"),
+
+    # -----------------------
+    # CRUD PARTOS
+    # -----------------------
+    path("partos/", web.partos_list, name="partos"),
+    path("partos/registrar/", web.registrar_parto, name="registrar_parto"),
+    path("partos/editar/<int:id>/", web.parto_editar, name="parto_editar"),
+    path("partos/eliminar/<int:id>/", web.parto_eliminar, name="parto_eliminar"),
+
+    # -----------------------
+    # CRUD RN
+    # -----------------------
     path("rn/", web.rn_view, name="rn"),
+    path("rn/editar/<int:id>/", web.rn_editar, name="rn_editar"),
+    path("rn/eliminar/<int:id>/", web.rn_eliminar, name="rn_eliminar"),
+
+    # -----------------------
+    # USUARIOS
+    # -----------------------
     path("usuarios/", web.usuarios_view, name="usuarios"),
 
-    # API
+    # -----------------------
+    # PDF
+    # -----------------------
+    path("descargar-rem22/", api.descargar_rem22, name="descargar_rem22"),
+
+    # -----------------------
+    # API REST (NO TOCAR)
+    # -----------------------
     path("api/login/", api.login),
     path("api/registrar/", api.registrar_usuario),
 
@@ -45,10 +74,15 @@ urlpatterns = [
     path("api/rn/<int:id>/actualizar/", api.actualizar_rn),
     path("api/rn/<int:id>/eliminar/", api.eliminar_rn),
 
-    # PDF
-    path("descargar-rem22/", api.descargar_rem22),
-
     # Admin
     path("admin/", admin.site.urls),
+
+    # URLs para Jefe de Área
+    path('reportes/', web.reportes_view, name='reportes'),
+    path('personal/', web.personal_view, name='personal'),
+    path('analisis/', web.analisis_view, name='analisis'),
 ]
+
+
+
 

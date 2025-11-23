@@ -8,93 +8,93 @@
 
 <style>
     body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #f8f4ff 0%, #ffffff 100%);
-    margin: 0;
-    padding: 0;
-}
+        font-family: Arial, sans-serif;
+        background: linear-gradient(180deg, #fff5f5 0%, #ffffff 100%);
+        margin: 0;
+        padding: 0;
+    }
 
-/* Encabezado */
-.header {
-    background: #00a676;
-    color: white;
-    padding: 40px;
-    text-align: center;
-    border-radius: 0 0 20px 20px;
-}
+    /* Encabezado */
+    .header {
+        background: #c94b4b; /* Rojo cálido */
+        color: white;
+        padding: 40px;
+        text-align: center;
+        border-radius: 0 0 20px 20px;
+    }
 
-/* Tarjetas principales */
-.stats-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 30px;
-}
+    /* Tarjetas principales */
+    .stats-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 30px;
+    }
 
-.stat-card {
-    background: white;
-    padding: 25px;
-    width: 200px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: transform .2s;
-    border: 2px solid rgba(0, 180, 90, 0.3);
-}
+    .stat-card {
+        background: white;
+        padding: 25px;
+        width: 200px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: transform .2s;
+        border: 2px solid rgba(201, 75, 75, 0.3); /* Rojo cálido suave */
+    }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-}
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
 
-.icon {
-    font-size: 40px;
-    display: block;
-    margin-bottom: 10px;
-}
+    .icon {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 10px;
+    }
 
-/* Sección de estadísticas */
-.section {
-    background: white;
-    margin: 20px auto;
-    width: 85%;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
+    /* Sección de estadísticas */
+    .section {
+        background: white;
+        margin: 20px auto;
+        width: 85%;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
 
-.chart-area {
-    border: 2px dashed #00a676;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-}
+    .chart-area {
+        border: 2px dashed #c94b4b; /* Rojo cálido */
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+    }
 
-/* Acciones rápidas */
-.actions-section {
-    margin: 20px auto;
-    width: 85%;
-}
+    /* Acciones rápidas */
+    .actions-section {
+        margin: 20px auto;
+        width: 85%;
+    }
 
-.quick-actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
 
-.action-btn {
-    background: #00a676;
-    color: white;
-    padding: 15px;
-    text-align: center;
-    border-radius: 15px;
-    font-size: 18px;
-    cursor: pointer;
-    transition: .2s;
-}
+    .action-btn {
+        background: #c94b4b; /* Rojo cálido */
+        color: white;
+        padding: 15px;
+        text-align: center;
+        border-radius: 15px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: .2s;
+    }
 
-.action-btn:hover {
-    background: #00885b;
-}
+    .action-btn:hover {
+        background: #b33a3a; /* Rojo cálido más oscuro */
+    }
 
 </style>
 
@@ -156,12 +156,13 @@
         <h2>⚡ Acciones Rápidas</h2>
 
         <div class="quick-actions">
-            <a href="{% url 'usuarios' %}"class="action-btn">👤 Usuarios</a>
-            <a href="{% url 'reportes' %}"class="action-btn">📑 Reportes</a>
-            <a href="{% url 'registrar' %}"class="action-btn">📦 Registros</a>
+            <a href="{% url 'usuarios' %}" class="action-btn">👤 Usuarios</a>
+            <a href="{% url 'reportes' %}" class="action-btn">📑 Reportes</a>
+            <a href="{% url 'registrar' %}" class="action-btn">📦 Registros</a>
         </div>
     </div>
 
 </body>
 </html>
+
 {% endblock %}

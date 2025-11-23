@@ -33,18 +33,23 @@ def registrar_usuario(request):
 
     data = json.loads(request.body)
 
+    rut = data.get("rut")  # ← AGREGADO
     nombre = data.get("nombre")
     email = data.get("email")
     contraseña = data.get("contraseña")
     rol = data.get("rol")
 
-    if not nombre or not email or not contraseña or not rol:
+    if not nombre or not email or not contraseña or not rol or not rut:  # ← MODIFICADO
         return JsonResponse({"success": False, "msg": "Campos incompletos"})
 
     if Usuario.objects.filter(email=email).exists():
         return JsonResponse({"success": False, "msg": "El email ya está registrado"})
 
+    if Usuario.objects.filter(rut=rut).exists():  # ← AGREGADO
+        return JsonResponse({"success": False, "msg": "El RUT ya está registrado"})
+
     usuario = Usuario.objects.create(
+        rut=rut,  # ← AGREGADO
         nombre=nombre,
         email=email,
         contraseña=make_password(contraseña),
@@ -356,4 +361,3 @@ def descargar_rem22(request):
     pdf.save()
 
     return response
-

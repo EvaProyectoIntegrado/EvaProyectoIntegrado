@@ -45,6 +45,25 @@ urlpatterns = [
     path("descargar-rem22/", api.descargar_rem22, name="descargar_rem22"),
 
     # -----------------------
+    # URLs para Jefe de Área
+    # -----------------------
+    path('reportes/', web.reportes_view, name='reportes'),
+    path('reportes/exportar-pdf/', web.exportar_pdf_reportes, name='exportar_pdf_reportes'),  # ← AGREGADO
+    path('personal/', web.personal_view, name='personal'),
+    path('personal/crear/', web.crear_personal, name='crear_personal'),
+    path('personal/editar/<int:id>/', web.editar_personal, name='editar_personal'),
+    path('personal/eliminar/<int:id>/', web.eliminar_personal, name='eliminar_personal'),
+    path('analisis/', web.analisis_view, name='analisis'),
+
+    # -----------------------
+    # URLs para Administrador
+    # -----------------------
+    path('admin/usuarios/', web.admin_usuarios_view, name='admin_usuarios'),
+    path('admin/areas/', web.admin_areas_view, name='admin_areas'),
+    path('admin/reportes/', web.admin_reportes_view, name='admin_reportes'),
+    path('admin/procesos/', web.admin_procesos_view, name='admin_procesos'),
+
+    # -----------------------
     # API REST (NO TOCAR)
     # -----------------------
     path("api/login/", api.login),
@@ -74,15 +93,6 @@ urlpatterns = [
     path("api/rn/<int:id>/actualizar/", api.actualizar_rn),
     path("api/rn/<int:id>/eliminar/", api.eliminar_rn),
 
-    # Admin
-    path("admin/", admin.site.urls),
-
-    # URLs para Jefe de Área
-    path('reportes/', web.reportes_view, name='reportes'),
-    path('personal/', web.personal_view, name='personal'),
-    path('analisis/', web.analisis_view, name='analisis'),
+    # Admin Django
+    path("admin/django/", admin.site.urls),
 ]
-
-
-
-

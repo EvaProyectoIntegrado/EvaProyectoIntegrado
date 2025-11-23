@@ -205,19 +205,19 @@
         <!-- Stats Cards -->
         <div class="stats-cards">
             <div class="mini-card total">
-                <div class="mini-card-value">{{ total_personal }}</div>
+                <div class="mini-card-value">{{ total_personal|default:0 }}</div>
                 <div class="mini-card-label">Total Personal</div>
             </div>
             <div class="mini-card matronas">
-                <div class="mini-card-value">{{ total_matronas }}</div>
+                <div class="mini-card-value">{{ total_matronas|default:0 }}</div>
                 <div class="mini-card-label">Matronas</div>
             </div>
             <div class="mini-card medicos">
-                <div class="mini-card-value">{{ total_medicos }}</div>
+                <div class="mini-card-value">{{ total_medicos|default:0 }}</div>
                 <div class="mini-card-label">Médicos</div>
             </div>
             <div class="mini-card jefes">
-                <div class="mini-card-value">{{ total_jefes }}</div>
+                <div class="mini-card-value">{{ total_jefes|default:0 }}</div>
                 <div class="mini-card-label">Jefes de Área</div>
             </div>
         </div>
@@ -237,7 +237,7 @@
                 <tbody>
                     {% for persona in personal %}
                     <tr>
-                        <td>{{ persona.rut }}</td>
+                        <td>{{ persona.rut|default:"Sin RUT" }}</td>
                         <td>{{ persona.nombre }}</td>
                         <td>{{ persona.email }}</td>
                         <td>
@@ -262,7 +262,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center">No hay personal registrado</td>
+                        <td colspan="5" class="text-center text-muted">No hay personal registrado</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -279,11 +279,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
                     <form method="POST" action="/personal/crear/">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label class="form-label">RUT</label>
-                            <input type="text" class="form-control" name="rut" required>
+                            <input type="text" class="form-control" name="rut" placeholder="12345678-9" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nombre Completo</label>
@@ -295,11 +298,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" name="password" required>
+                            <input type="password" class="form-control" name="password" minlength="6" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Rol</label>
                             <select class="form-select" name="rol" required>
+                                <option value="">Seleccione un rol</option>
                                 <option value="matrona">Matrona</option>
                                 <option value="medico">Médico</option>
                                 <option value="jefe_area">Jefe de Área</option>
@@ -319,12 +323,20 @@
     
     <script>
         $(document).ready(function() {
-            $('#tablaPersonal').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-                },
-                pageLength: 10
-            });
+            // Inicializar DataTables solo si hay filas con datos
+            var table = $('#tablaPersonal');
+            var rowCount = table.find('tbody tr').length;
+            var hasData = table.find('tbody tr td[colspan]').length === 0;
+            
+            if (hasData && rowCount > 0) {
+                table.DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                    },
+                    pageLength: 10,
+                    order: [[1, 'asc']]  // Ordenar por nombre
+                });
+            }
         });
 
         function editarPersonal(id) {
@@ -336,6 +348,14 @@
                 window.location.href = `/personal/eliminar/${id}/`;
             }
         }
+
+        // Mostrar modal con error si existe
+        {% if error %}
+        $(document).ready(function() {
+            var modal = new bootstrap.Modal(document.getElementById('modalAgregarPersonal'));
+            modal.show();
+        });
+        {% endif %}
     </script>
 </body>
 </html>

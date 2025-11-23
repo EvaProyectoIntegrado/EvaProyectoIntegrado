@@ -1,5 +1,5 @@
 # REEMPLAZA TODO TU ARCHIVO views.py CON ESTE CÓDIGO CORREGIDO
-
+from django.http import HttpResponse  # ← AGREGAR ESTA LÍNEA
 from django.shortcuts import render, redirect, get_object_or_404
 from api.models import Usuario, Madre, Parto, RecienNacido
 from datetime import datetime
@@ -506,3 +506,444 @@ def analisis_view(request):
     }
     
     return render(request, "analisis.html", context)
+
+def crear_personal(request):
+    """Vista para crear nuevo personal"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol not in ["jefe_area", "admin"]:
+        return redirect("/dashboard/")
+    
+    error = None
+    
+    if request.method == "POST":
+        rut = request.POST.get("rut")
+        nombre = request.POST.get("nombre")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        rol_nuevo = request.POST.get("rol")
+        
+        # Validaciones
+        if not all([rut, nombre, email, password, rol_nuevo]):
+            error = "❌ Todos los campos son obligatorios"
+        elif Usuario.objects.filter(email=email).exists():
+            error = "❌ Ya existe un usuario con ese email"
+        elif Usuario.objects.filter(rut=rut).exists():
+            error = "❌ Ya existe un usuario con ese RUT"
+        else:
+            # Crear usuario
+            from django.contrib.auth.hashers import make_password
+            Usuario.objects.create(
+                rut=rut,
+                nombre=nombre,
+                email=email,
+                contraseña=make_password(password),
+                rol=rol_nuevo
+            )
+            return redirect("/personal/")
+    
+    context = {
+        "rol": rol,
+        "error": error,
+    }
+    
+    return render(request, "personal.html", context)
+
+def editar_personal(request, id):
+    """Vista para editar personal existente"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol not in ["jefe_area", "admin"]:
+        return redirect("/dashboard/")
+    
+    persona = get_object_or_404(Usuario, id=id)
+    error = None
+    
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        email = request.POST.get("email")
+        rol_nuevo = request.POST.get("rol")
+        
+        # Validar que el email no esté en uso por otro usuario
+        if Usuario.objects.filter(email=email).exclude(id=id).exists():
+            error = "❌ Ya existe otro usuario con ese email"
+        else:
+            persona.nombre = nombre
+            persona.email = email
+            persona.rol = rol_nuevo
+            persona.save()
+            return redirect("/personal/")
+    
+    context = {
+        "rol": rol,
+        "persona": persona,
+        "error": error,
+    }
+    
+    return render(request, "personal_editar.html", context)
+
+
+def eliminar_personal(request, id):
+    """Vista para eliminar personal"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol not in ["jefe_area", "admin"]:
+        return redirect("/dashboard/")
+    
+    persona = get_object_or_404(Usuario, id=id)
+    persona.delete()
+    
+    return redirect("/personal/")
+
+# ============================================
+# VISTAS ADMINISTRADOR
+# ============================================
+
+def admin_usuarios_view(request):
+    """Vista de gestión total de usuarios para admin"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol != "admin":
+        return redirect("/dashboard/")
+    
+    usuarios = Usuario.objects.all().order_by('-id')
+    
+    # Estadísticas detalladas
+    total_usuarios = usuarios.count()
+    usuarios_activos = total_usuarios  # Puedes agregar campo 'activo' después
+    matronas = Usuario.objects.filter(rol='matrona').count()
+    medicos = Usuario.objects.filter(rol='medico').count()
+    jefes = Usuario.objects.filter(rol='jefe_area').count()
+    admins = Usuario.objects.filter(rol='admin').count()
+    
+    context = {
+        "rol": rol,
+        "usuarios": usuarios,
+        "total_usuarios": total_usuarios,
+        "usuarios_activos": usuarios_activos,
+        "matronas": matronas,
+        "medicos": medicos,
+        "jefes": jefes,
+        "admins": admins,
+    }
+    
+    return render(request, "admin_usuarios.html", context)
+
+
+def admin_areas_view(request):
+    """Vista de áreas registradas"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol != "admin":
+        return redirect("/dashboard/")
+    
+    # Estadísticas por área
+    total_madres = Madre.objects.count()
+    total_partos = Parto.objects.count()
+    total_rn = RecienNacido.objects.count()
+    
+    # Áreas ficticias (puedes crear un modelo después)
+    areas = [
+        {"nombre": "Maternidad", "pacientes": total_madres, "activa": True},
+        {"nombre": "Sala de Partos", "pacientes": total_partos, "activa": True},
+        {"nombre": "Neonatología", "pacientes": total_rn, "activa": True},
+    ]
+    
+    context = {
+        "rol": rol,
+        "areas": areas,
+        "total_areas": len(areas),
+        "total_madres": total_madres,
+        "total_partos": total_partos,
+        "total_rn": total_rn,
+    }
+    
+    return render(request, "admin_areas.html", context)
+
+
+def admin_reportes_view(request):
+    """Vista de reportes mensuales"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol != "admin":
+        return redirect("/dashboard/")
+    
+    hoy = timezone.now()
+    mes_actual = hoy.month
+    anio_actual = hoy.year
+    
+    # Reportes del mes
+    partos_mes = Parto.objects.filter(
+        fecha_parto__month=mes_actual,
+        fecha_parto__year=anio_actual
+    ).count()
+    
+    madres_mes = Madre.objects.filter(
+        id__in=Parto.objects.filter(
+            fecha_parto__month=mes_actual,
+            fecha_parto__year=anio_actual
+        ).values_list('madre_id', flat=True)
+    ).count()
+    
+    rn_mes = RecienNacido.objects.filter(
+        parto__fecha_parto__month=mes_actual,
+        parto__fecha_parto__year=anio_actual
+    ).count()
+    
+    context = {
+        "rol": rol,
+        "mes_nombre": hoy.strftime("%B %Y"),
+        "partos_mes": partos_mes,
+        "madres_mes": madres_mes,
+        "rn_mes": rn_mes,
+        "total_reportes": partos_mes + madres_mes + rn_mes,
+    }
+    
+    return render(request, "admin_reportes.html", context)
+
+
+def admin_procesos_view(request):
+    """Vista de procesos activos del sistema"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol != "admin":
+        return redirect("/dashboard/")
+    
+    # Procesos activos simulados
+    procesos = [
+        {"nombre": "Sistema de Registro", "estado": "Activo", "uso": "85%"},
+        {"nombre": "Base de Datos", "estado": "Activo", "uso": "60%"},
+        {"nombre": "Generación de PDFs", "estado": "Activo", "uso": "40%"},
+        {"nombre": "Sistema de Sesiones", "estado": "Activo", "uso": "70%"},
+    ]
+    
+    context = {
+        "rol": rol,
+        "procesos": procesos,
+        "total_procesos": len(procesos),
+        "procesos_activos": len([p for p in procesos if p['estado'] == 'Activo']),
+    }
+    
+    return render(request, "admin_procesos.html", context)
+
+# ============================================
+# EXPORTAR PDF DE REPORTES
+# ============================================
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from io import BytesIO
+
+def exportar_pdf_reportes(request):
+    """Genera PDF completo con estadísticas y reportes"""
+    if not request.session.get("usuario_id"):
+        return redirect("/login/")
+    
+    rol = request.session.get("rol")
+    if rol not in ["jefe_area", "admin"]:
+        return redirect("/dashboard/")
+    
+    # Crear el PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Reporte_Maternidad_{timezone.now().strftime("%Y%m%d_%H%M%S")}.pdf"'
+    
+    # Crear el documento
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=18)
+    
+    # Container para los elementos
+    elements = []
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.HexColor('#0066CC'),
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=16,
+        textColor=colors.HexColor('#111827'),
+        spaceAfter=12,
+        spaceBefore=12,
+        fontName='Helvetica-Bold'
+    )
+    
+    # Título principal
+    elements.append(Paragraph("REPORTE DE ESTADISTICAS - SISTEMA MATERNIDAD", title_style))
+    elements.append(Paragraph("Sistema de Gestion Maternidad", styles['Normal']))
+    elements.append(Paragraph(f"Generado: {timezone.now().strftime('%d/%m/%Y %H:%M')}", styles['Normal']))
+    elements.append(Spacer(1, 0.5*inch))
+    
+    # Obtener datos
+    hoy = timezone.now()
+    mes_actual = hoy.month
+    anio_actual = hoy.year
+    
+    total_madres = Madre.objects.count()
+    total_partos = Parto.objects.count()
+    total_rn = RecienNacido.objects.count()
+    partos_mes = Parto.objects.filter(
+        fecha_parto__month=mes_actual,
+        fecha_parto__year=anio_actual
+    ).count()
+    
+    # SECCIÓN 1: Resumen Ejecutivo
+    elements.append(Paragraph("1. RESUMEN EJECUTIVO", heading_style))
+    
+    data_resumen = [
+        ['Indicador', 'Total'],
+        ['Madres Registradas', str(total_madres)],
+        ['Partos Totales', str(total_partos)],
+        ['Recien Nacidos', str(total_rn)],
+        ['Partos Este Mes', str(partos_mes)],
+    ]
+    
+    table_resumen = Table(data_resumen, colWidths=[4*inch, 2*inch])
+    table_resumen.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0066CC')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+    ]))
+    
+    elements.append(table_resumen)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # SECCIÓN 2: Partos por Tipo
+    elements.append(Paragraph("2. PARTOS POR TIPO", heading_style))
+    
+    partos_por_tipo = Parto.objects.values('tipo_parto').annotate(total=Count('id'))
+    
+    data_tipo = [['Tipo de Parto', 'Cantidad', 'Porcentaje']]
+    for item in partos_por_tipo:
+        porcentaje = (item['total'] / total_partos * 100) if total_partos > 0 else 0
+        data_tipo.append([
+            item['tipo_parto'].capitalize(),
+            str(item['total']),
+            f"{porcentaje:.1f}%"
+        ])
+    
+    table_tipo = Table(data_tipo, colWidths=[2.5*inch, 2*inch, 1.5*inch])
+    table_tipo.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#10B981')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+    ]))
+    
+    elements.append(table_tipo)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # SECCIÓN 3: Recién Nacidos por Sexo
+    elements.append(Paragraph("3. RECIEN NACIDOS POR SEXO", heading_style))
+    
+    rn_por_sexo = RecienNacido.objects.values('sexo').annotate(total=Count('id'))
+    
+    data_sexo = [['Sexo', 'Cantidad', 'Porcentaje']]
+    for item in rn_por_sexo:
+        porcentaje = (item['total'] / total_rn * 100) if total_rn > 0 else 0
+        data_sexo.append([
+            item['sexo'],
+            str(item['total']),
+            f"{porcentaje:.1f}%"
+        ])
+    
+    table_sexo = Table(data_sexo, colWidths=[2.5*inch, 2*inch, 1.5*inch])
+    table_sexo.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8B5CF6')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+    ]))
+    
+    elements.append(table_sexo)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # SECCIÓN 4: Tendencia Mensual (últimos 6 meses)
+    elements.append(Paragraph("4. TENDENCIA ULTIMOS 6 MESES", heading_style))
+    
+    data_tendencia = [['Mes', 'Cantidad de Partos']]
+    
+    for i in range(6, 0, -1):
+        fecha = hoy - timedelta(days=30*i)
+        mes = fecha.month
+        anio = fecha.year
+        count = Parto.objects.filter(
+            fecha_parto__month=mes,
+            fecha_parto__year=anio
+        ).count()
+        mes_nombre = fecha.strftime("%B %Y")
+        data_tendencia.append([mes_nombre, str(count)])
+    
+    table_tendencia = Table(data_tendencia, colWidths=[3.5*inch, 2.5*inch])
+    table_tendencia.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F59E0B')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+    ]))
+    
+    elements.append(table_tendencia)
+    elements.append(Spacer(1, 0.5*inch))
+    
+    # Footer
+    elements.append(Paragraph("_______________________________________________", styles['Normal']))
+    elements.append(Spacer(1, 0.2*inch))
+    elements.append(Paragraph("Sistema de Gestion Maternidad - 2025", styles['Normal']))
+    
+    # Construir PDF
+    doc.build(elements)
+    
+    # Obtener el valor del buffer
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    
+    return response

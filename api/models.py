@@ -12,6 +12,7 @@ class Usuario(models.Model):
         ('admin', 'Administrador'),
     ]
 
+    rut = models.CharField(max_length=12, unique=True, default='00000000-0')  # ← AGREGADO
     nombre = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     contraseña = models.CharField(max_length=255)
@@ -41,8 +42,8 @@ class Madre(models.Model):
 # ============================
 class Parto(models.Model):
     madre = models.ForeignKey(Madre, on_delete=models.CASCADE, related_name='partos')
-    fecha_parto = models.DateField()  # mejor para reportes
-    tipo_parto = models.CharField(max_length=50)  # normal, cesarea, inducido
+    fecha_parto = models.DateField()
+    tipo_parto = models.CharField(max_length=50)
     observaciones = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -58,7 +59,7 @@ class RecienNacido(models.Model):
     peso = models.FloatField()
     talla = models.FloatField()
     apgar = models.IntegerField()
-    sexo = models.CharField(max_length=10, choices=[('Masculino', 'Masculino'), ('Femenino', 'Femenino')], default='Masculino')  # ← AGREGAR ESTA LÍNEA
+    sexo = models.CharField(max_length=10, choices=[('Masculino', 'Masculino'), ('Femenino', 'Femenino')], default='Masculino')
 
     def __str__(self):
         return f"RN del parto {self.parto.id}"

@@ -269,6 +269,20 @@
             <div id="alert" class="alert"></div>
 
             <form id="registerForm">
+                <!-- ← CAMPO RUT AGREGADO -->
+                <div class="form-group">
+                    <label for="rut">RUT</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🆔</span>
+                        <input 
+                            type="text" 
+                            id="rut" 
+                            placeholder="12345678-9"
+                            required
+                        >
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="nombre">Nombre completo</label>
                     <div class="input-wrapper">
@@ -358,13 +372,14 @@
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
+            const rut = document.getElementById("rut").value.trim();  // ← AGREGADO
             const nombre = document.getElementById("nombre").value.trim();
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
             const rol = document.getElementById("rol").value;
 
             // Validaciones
-            if (!nombre || !email || !password || !rol) {
+            if (!rut || !nombre || !email || !password || !rol) {  // ← MODIFICADO
                 showAlert("Por favor completa todos los campos", "error");
                 return;
             }
@@ -385,6 +400,7 @@
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
+                        rut: rut,  // ← AGREGADO
                         nombre: nombre,
                         email: email,
                         contraseña: password,

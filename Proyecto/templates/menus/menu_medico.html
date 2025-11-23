@@ -1,42 +1,76 @@
 <style>
-    .nav {
-        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-        padding: 15px;
-        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    .nav-medico {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #0e7490 100%);
+        padding: 0;
+        box-shadow: 0 8px 24px rgba(6, 182, 212, 0.35);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 3px solid rgba(255, 255, 255, 0.2);
     }
 
-    .nav ul {
+    .nav-medico ul {
         list-style: none;
         margin: 0;
         padding: 0;
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 25px;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 16px 24px;
     }
 
-    .nav a {
+    .nav-medico a {
         text-decoration: none;
-        font-weight: bold;
-        font-size: 18px;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.3px;
         color: white;
-        transition: all 0.3s ease;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(255, 255, 255, 0.2);
     }
 
-    .nav a:hover {
-        color: #bfdbfe;
-        transform: scale(1.05);
+    .nav-medico a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
     }
 
-    /* Dark Mode */
-    .dark-mode .nav {
-        background: linear-gradient(135deg, #075985 0%, #0c4a6e 100%);
+    .nav-medico a:hover::before {
+        left: 100%;
+    }
+
+    .nav-medico a:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .nav-medico ul { gap: 8px; padding: 14px 20px; }
+        .nav-medico a { padding: 10px 18px; font-size: 14px; }
     }
 </style>
 
-<nav class="nav">
+<nav class="nav-medico">
     <ul>
-        <li><a href="/">🏠 Inicio</a></li>
+        <li><a href="/dashboard/">🏠 Inicio</a></li>
         <li><a href="/madres/">👥 Pacientes</a></li>
         <li><a href="/partos/">🏥 Partos</a></li>
         <li><a href="/rn/">👶 Neonatos</a></li>

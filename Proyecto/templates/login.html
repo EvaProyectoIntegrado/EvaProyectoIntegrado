@@ -147,25 +147,6 @@
             transform: translateY(0);
         }
 
-        .register-link {
-            text-align: center;
-            margin-top: 25px;
-            color: #718096;
-            font-size: 14px;
-        }
-
-        .register-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .register-link a:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-
         .alert {
             padding: 12px 16px;
             border-radius: 10px;
@@ -296,9 +277,7 @@
                 </button>
             </form>
 
-            <div class="register-link">
-                ¿No tienes cuenta? <a href="/registrar/">Crear cuenta</a>
-            </div>
+            <!-- Enlace de registro eliminado - Solo el administrador puede crear cuentas -->
         </div>
 
         <div class="footer-text">
@@ -355,7 +334,7 @@
                 if (data.success) {
                     sessionStorage.setItem("rol", data.rol);
                     
-                    showAlert("¡Bienvenida " + data.usuario + "!", "success");
+                    showAlert("¡Bienvenido/a " + data.usuario + "!", "success");
                     
                     setTimeout(() => {
                         window.location.href = "/dashboard/";

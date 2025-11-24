@@ -116,6 +116,23 @@ def login_view(request):
 
 
 def register_view(request):
+    """
+    Vista de registro de nuevos usuarios.
+    
+    Permisos:
+        - Solo Administrador
+        
+    Restricciones:
+        - Requiere rol 'admin'
+        - Redirecciona a dashboard si no tiene permisos
+        
+    Returns:
+        HttpResponse: Template de registro o redirección
+    """
+    # Solo admin puede registrar usuarios
+    if request.session.get("rol") != "admin":
+        return redirect("/dashboard/")
+    
     return render(request, "registrar.html")
 
 
@@ -508,12 +525,25 @@ def analisis_view(request):
     return render(request, "analisis.html", context)
 
 def crear_personal(request):
-    """Vista para crear nuevo personal"""
+    """
+    Vista para crear nuevo personal desde el módulo de gestión.
+    
+    Permisos:
+        - Solo Administrador
+        
+    Args:
+        request (HttpRequest): Petición con datos del formulario
+        
+    Returns:
+        HttpResponse: Renderiza personal.html con error o redirecciona
+    """
     if not request.session.get("usuario_id"):
         return redirect("/login/")
     
     rol = request.session.get("rol")
-    if rol not in ["jefe_area", "admin"]:
+    
+    # Solo admin puede crear personal
+    if rol != "admin":
         return redirect("/dashboard/")
     
     error = None
@@ -552,12 +582,19 @@ def crear_personal(request):
     return render(request, "personal.html", context)
 
 def editar_personal(request, id):
-    """Vista para editar personal existente"""
+    """
+    Vista para editar personal existente.
+    
+    Permisos:
+        - Solo Administrador
+    """
     if not request.session.get("usuario_id"):
         return redirect("/login/")
     
     rol = request.session.get("rol")
-    if rol not in ["jefe_area", "admin"]:
+    
+    # Solo admin puede editar
+    if rol != "admin":
         return redirect("/dashboard/")
     
     persona = get_object_or_404(Usuario, id=id)
@@ -588,12 +625,19 @@ def editar_personal(request, id):
 
 
 def eliminar_personal(request, id):
-    """Vista para eliminar personal"""
+    """
+    Vista para eliminar personal del sistema.
+    
+    Permisos:
+        - Solo Administrador
+    """
     if not request.session.get("usuario_id"):
         return redirect("/login/")
     
     rol = request.session.get("rol")
-    if rol not in ["jefe_area", "admin"]:
+    
+    # Solo admin puede eliminar
+    if rol != "admin":
         return redirect("/dashboard/")
     
     persona = get_object_or_404(Usuario, id=id)

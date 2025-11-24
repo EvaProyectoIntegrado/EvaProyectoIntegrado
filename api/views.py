@@ -28,35 +28,80 @@ def pagina_dashboard(request):
 # =========================================================
 @csrf_exempt
 def registrar_usuario(request):
+    """
+    API endpoint para crear nuevos usuarios en el sistema.
+    
+    Permisos:
+        - Solo Administrador
+        
+    Validaciones:
+        - RUT único
+        - Email único
+        - Campos obligatorios completos
+        - Rol válido
+        
+    Args:
+        request (HttpRequest): Petición POST con datos JSON
+            - rut: RUT del usuario (único)
+            - nombre: Nombre completo
+            - email: Email (único)
+            - contraseña: Contraseña en texto plano (será hasheada)
+            - rol: Rol asignado (matrona, medico, jefe_area, admin)
+            
+    Returns:
+        JsonResponse: 
+            - success=True: Usuario creado exitosamente
+            - success=False: Error con mensaje descriptivo
+    """
     if request.method != "POST":
         return JsonResponse({"success": False, "msg": "Método no permitido"})
 
+    # Solo admin puede registrar usuarios
+    if request.session.get("rol") != "admin":
+        return JsonResponse({
+            "success": False, 
+            "msg": "⛔ No tienes permisos para registrar usuarios. Solo el Administrador puede crear cuentas."
+        })
+
     data = json.loads(request.body)
 
-    rut = data.get("rut")  # ← AGREGADO
+    rut = data.get("rut")
     nombre = data.get("nombre")
     email = data.get("email")
     contraseña = data.get("contraseña")
     rol = data.get("rol")
 
-    if not nombre or not email or not contraseña or not rol or not rut:  # ← MODIFICADO
-        return JsonResponse({"success": False, "msg": "Campos incompletos"})
+    # Validar campos obligatorios
+    if not nombre or not email or not contraseña or not rol or not rut:
+        return JsonResponse({"success": False, "msg": "❌ Todos los campos son obligatorios"})
 
+    # Validar email único
     if Usuario.objects.filter(email=email).exists():
-        return JsonResponse({"success": False, "msg": "El email ya está registrado"})
+        return JsonResponse({"success": False, "msg": "❌ Ya existe un usuario con ese email"})
 
-    if Usuario.objects.filter(rut=rut).exists():  # ← AGREGADO
-        return JsonResponse({"success": False, "msg": "El RUT ya está registrado"})
+    # Validar RUT único
+    if Usuario.objects.filter(rut=rut).exists():
+        return JsonResponse({"success": False, "msg": "❌ Ya existe un usuario con ese RUT"})
 
+    # Validar rol válido
+    roles_validos = ['matrona', 'medico', 'jefe_area', 'admin']
+    if rol not in roles_validos:
+        return JsonResponse({"success": False, "msg": "❌ Rol inválido"})
+
+    # Crear usuario con contraseña hasheada
     usuario = Usuario.objects.create(
-        rut=rut,  # ← AGREGADO
+        rut=rut,
         nombre=nombre,
         email=email,
-        contraseña=make_password(contraseña),
+        contraseña=make_password(contraseña),  # Hash de contraseña
         rol=rol
     )
 
-    return JsonResponse({"success": True, "msg": "Usuario registrado", "id": usuario.id})
+    return JsonResponse({
+        "success": True, 
+        "msg": f"✅ Usuario {nombre} creado exitosamente con rol {rol}",
+        "id": usuario.id
+    })
 
 
 # =========================================================

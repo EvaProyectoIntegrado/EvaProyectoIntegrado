@@ -95,4 +95,5 @@ urlpatterns = [
 
     # Admin Django
     path("admin/django/", admin.site.urls),
+    
 ]

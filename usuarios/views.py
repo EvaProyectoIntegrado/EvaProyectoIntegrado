@@ -99,14 +99,45 @@ def rn_view(request):
 
 
 def usuarios_view(request):
+    """
+    Vista de lista de usuarios del sistema.
+    
+    Permisos:
+        - Jefe de Área (solo visualización)
+        - Administrador (visualización completa)
+        
+    Returns:
+        HttpResponse: Template usuarios.html con lista de usuarios
+    """
     if not request.session.get("usuario_id"):
         return redirect("/login/")
         
-    if request.session.get("rol") not in ["jefe_area", "admin"]:
+    rol = request.session.get("rol")
+    
+    if rol not in ["jefe_area", "admin"]:
         return redirect("/dashboard/")
-        
-    usuarios = Usuario.objects.all()
-    return render(request, "usuarios.html", {"usuarios": usuarios})
+    
+    # Obtener todos los usuarios ordenados por nombre
+    usuarios = Usuario.objects.all().order_by('nombre')
+    
+    # Estadísticas por rol
+    total_usuarios = usuarios.count()
+    total_matronas = Usuario.objects.filter(rol='matrona').count()
+    total_medicos = Usuario.objects.filter(rol='medico').count()
+    total_jefes = Usuario.objects.filter(rol='jefe_area').count()
+    total_admins = Usuario.objects.filter(rol='admin').count()
+    
+    context = {
+        "rol": rol,
+        "usuarios": usuarios,
+        "total_usuarios": total_usuarios,
+        "total_matronas": total_matronas,
+        "total_medicos": total_medicos,
+        "total_jefes": total_jefes,
+        "total_admins": total_admins,
+    }
+    
+    return render(request, "usuarios.html", context)
 
 
 # ==================== LOGIN Y REGISTRO ====================
@@ -139,22 +170,70 @@ def register_view(request):
 # ==================== DASHBOARD ====================
 
 def dashboard(request):
+    """
+    Vista principal del dashboard con estadísticas y gráficos.
+    
+    Muestra diferentes dashboards según el rol del usuario.
+    """
     if not request.session.get("usuario_id"):
         return redirect("/login/")
     
-    # Obtener estadísticas
+    # Obtener estadísticas generales
+    hoy = timezone.now()
+    mes_actual = hoy.month
+    anio_actual = hoy.year
+    
     total_madres = Madre.objects.count()
     total_partos = Parto.objects.count()
     total_rn = RecienNacido.objects.count()
+    partos_mes = Parto.objects.filter(
+        fecha_parto__month=mes_actual,
+        fecha_parto__year=anio_actual
+    ).count()
     
-    mes_actual = datetime.now().month
-    partos_mes = Parto.objects.filter(fecha_parto__month=mes_actual).count()
+    # Datos para gráficos (solo si hay partos)
+    if total_partos > 0:
+        # Partos por tipo
+        cesareas = Parto.objects.filter(tipo_parto='cesarea').count()
+        normales = Parto.objects.filter(tipo_parto='normal').count()
+        inducidos = Parto.objects.filter(tipo_parto='inducido').count()
+        
+        # RN por sexo
+        rn_masculino = RecienNacido.objects.filter(sexo='M').count()
+        rn_femenino = RecienNacido.objects.filter(sexo='F').count()
+        
+        # Últimos 6 meses
+        meses_labels = []
+        partos_por_mes_datos = []
+        
+        for i in range(6, 0, -1):
+            fecha = hoy - timedelta(days=30*i)
+            mes = fecha.month
+            anio = fecha.year
+            count = Parto.objects.filter(
+                fecha_parto__month=mes,
+                fecha_parto__year=anio
+            ).count()
+            meses_labels.append(fecha.strftime("%B"))
+            partos_por_mes_datos.append(count)
+    else:
+        cesareas = normales = inducidos = 0
+        rn_masculino = rn_femenino = 0
+        meses_labels = ['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov']
+        partos_por_mes_datos = [0, 0, 0, 0, 0, 0]
     
     context = {
         'total_madres': total_madres,
         'total_partos': total_partos,
         'total_rn': total_rn,
         'partos_mes': partos_mes,
+        'cesareas': cesareas,
+        'normales': normales,
+        'inducidos': inducidos,
+        'rn_masculino': rn_masculino,
+        'rn_femenino': rn_femenino,
+        'meses_labels': json.dumps(meses_labels),
+        'partos_por_mes_datos': json.dumps(partos_por_mes_datos),
     }
     
     # Cargar template según el rol
@@ -991,3 +1070,4 @@ def exportar_pdf_reportes(request):
     response.write(pdf)
     
     return response
+
